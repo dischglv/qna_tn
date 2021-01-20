@@ -3,6 +3,10 @@ class AnswersController < ApplicationController
     @answers = Answer.all
   end
 
+  def show; end
+
+  def new; end
+
   private
 
   def answer
