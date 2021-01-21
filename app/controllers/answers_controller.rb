@@ -7,6 +7,14 @@ class AnswersController < ApplicationController
 
   def new; end
 
+  def edit; end
+
+  def create
+    @answer = Answer.new(answer_params)
+    @answer.save
+    redirect_to question_answer_path(@answer.question, @answer)
+  end
+
   private
 
   def answer
@@ -14,4 +22,8 @@ class AnswersController < ApplicationController
   end
 
   helper_method :answer
+
+  def answer_params
+    params.require(:answer).permit(:body, :question_id)
+  end
 end

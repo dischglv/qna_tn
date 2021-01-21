@@ -31,4 +31,48 @@ RSpec.describe AnswersController, type: :controller do
       expect(response).to render_template :new
     end
   end
+
+  describe 'GET #edit' do
+    let(:answer) { create(:answer) }
+
+    it 'renders edit view' do
+      get :edit, params: { question_id: question, id: answer }
+      expect(response).to render_template :edit
+    end
+  end
+
+  describe 'POST #create' do
+    context 'with valid attributes' do
+
+      it 'saves a new answer to the database' do
+        expect { post :create, params: { question_id: question, answer: { body: 'MyText', question_id: question } } }.to change(Answer, :count).by(1)
+      end
+
+      it 'redirects to show view' do
+        post :create, params: { question_id: question, answer: { body: 'MyText', question_id: question } }
+        expect(response).to redirect_to question_answer_path(question, assigns(:answer))
+      end
+    end
+
+    context 'with invalid attributes' do
+      it 'does not save the answer'
+      it 're-renders new view'
+    end
+  end
+
+  describe 'PATCH #update' do
+    context 'with valid attributes' do
+      it 'changes answer attributes'
+      it 'redirects to updated answer'
+    end
+
+    context 'with invalid attributes' do
+      it 'does not change the answer'
+      it 're-renders edit view'
+    end
+  end
+
+  describe 'DELETE #destroy' do
+
+  end
 end
