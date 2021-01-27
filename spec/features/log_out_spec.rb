@@ -6,19 +6,17 @@ feature 'User can log out', %q{
   I'd like to log out
 } do
 
-  scenario 'Authenticated user can log out from /questions page' do
-    user = create(:user)
-    sign_in(user)
+  given(:user) { create(:user) }
 
+  background { sign_in(user) }
+
+  scenario 'Authenticated user can log out from /questions page' do
     visit questions_path
     click_on 'Log out'
     expect(page).to have_content 'Signed out successfully.'
   end
 
   scenario 'Authenticated user can log out from question page' do
-    user = create(:user)
-    sign_in(user)
-
     question = create(:question)
 
     visit question_path(question)
