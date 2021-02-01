@@ -11,7 +11,8 @@ feature 'User can view a question with answers', %q{
     question.answers.create(body: 'text2')
     question.answers.create(body: 'text3')
 
-    visit question_path(question)
+    visit questions_path
+    click_on 'Show question'
 
     expect(page).to have_content question.title
     expect(page).to have_content question.body
