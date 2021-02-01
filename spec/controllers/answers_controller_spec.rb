@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe AnswersController, type: :controller do
   let(:question) { create(:question) }
+  let(:user) { create(:user) }
 
   describe 'GET #index' do
     let(:answers) { create_list(:answer, 5) }
@@ -26,6 +27,8 @@ RSpec.describe AnswersController, type: :controller do
   end
 
   describe 'GET #new' do
+    before { login(user) }
+
     it 'renders new view' do
       get :new, params: { question_id: question }
       expect(response).to render_template :new
@@ -33,6 +36,8 @@ RSpec.describe AnswersController, type: :controller do
   end
 
   describe 'GET #edit' do
+    before { login(user) }
+
     let(:answer) { create(:answer) }
 
     it 'renders edit view' do
@@ -42,6 +47,8 @@ RSpec.describe AnswersController, type: :controller do
   end
 
   describe 'POST #create' do
+    before { login(user) }
+
     context 'with valid attributes' do
       it 'saves a new answer to the database' do
         expect { post :create, params: { question_id: question, answer: { body: 'MyText' } } }.to change(question.answers, :count).by(1)
@@ -66,6 +73,8 @@ RSpec.describe AnswersController, type: :controller do
   end
 
   describe 'PATCH #update' do
+    before { login(user) }
+
     context 'with valid attributes' do
       let(:answer) { question.answers.create(body: 'Text') }
 
@@ -101,6 +110,8 @@ RSpec.describe AnswersController, type: :controller do
   end
 
   describe 'DELETE #destroy' do
+    before { login(user) }
+
     let!(:answer) { create(:answer) }
 
     it 'deletes the answer' do
