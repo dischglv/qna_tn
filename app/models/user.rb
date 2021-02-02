@@ -6,4 +6,9 @@ class User < ApplicationRecord
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
+
+  def owes_question(question)
+    question.user_id == id
+  end
+
 end
