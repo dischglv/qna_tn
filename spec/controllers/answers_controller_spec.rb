@@ -76,7 +76,7 @@ RSpec.describe AnswersController, type: :controller do
     before { login(user) }
 
     context 'with valid attributes' do
-      let(:answer) { question.answers.create(body: 'Text') }
+      let(:answer) { create(:answer, question: question, user: user) }
 
       before { patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' } } }
 

@@ -5,11 +5,9 @@ feature 'User can view a question with answers', %q{
   As a user of the system
   I'd like to be able to view the question with answers
 } do
-  scenario 'Authenticated user can view a question with answers' do
+  scenario 'User can view a question with answers' do
     question = create(:question)
-    question.answers.create(body: 'text1')
-    question.answers.create(body: 'text2')
-    question.answers.create(body: 'text3')
+    question.answers = create_list(:answer, 3, question: question)
 
     visit questions_path
     click_on 'Show question'

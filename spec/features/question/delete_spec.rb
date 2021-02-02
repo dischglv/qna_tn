@@ -16,12 +16,14 @@ feature 'User can delete his question', %q{
 
     expect(page).to_not have_content question.title
   end
+  
   scenario "Authenticated user can not delete someone else's question" do
     sign_in(user2)
     visit questions_path
 
     expect(page).to_not have_content 'Delete question'
   end
+
   scenario 'Unauthenticated user can not delete question' do
     visit questions_path
     expect(page).to_not have_content 'Delete question'
