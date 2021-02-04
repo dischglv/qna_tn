@@ -33,7 +33,7 @@ class QuestionsController < ApplicationController
   end
 
   def destroy
-    question.destroy
+    question.destroy if current_user.owes_resource(question)
     redirect_to questions_path
   end
 

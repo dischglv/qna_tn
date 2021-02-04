@@ -13,7 +13,7 @@ class AnswersController < ApplicationController
 
   def create
     @answer = question.answers.new(answer_params)
-    @answer.user_id = current_user.id
+    @answer.user = current_user
 
     if @answer.save
       redirect_to question_path(question), notice: 'Your answer successfully created'
@@ -31,7 +31,7 @@ class AnswersController < ApplicationController
   end
 
   def destroy
-    answer.destroy
+    answer.destroy if current_user.owes_resource(answer)
     redirect_to question_answers_path(answer.question)
   end
 
