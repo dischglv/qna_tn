@@ -13,6 +13,8 @@ feature 'User can delete his answer', %q{
   scenario 'Authenticated user can delete his own answer' do
     sign_in(user1)
     visit question_path(question)
+
+    expect(page).to have_content answer.body
     click_on 'Delete answer'
 
     expect(page).to_not have_content answer.body
@@ -22,11 +24,11 @@ feature 'User can delete his answer', %q{
     sign_in(user2)
     visit question_path(question)
 
-    expect(page).to_not have_content 'Delete answer'
+    expect(page).to_not have_link 'Delete answer'
   end
 
   scenario 'Unauthenticated user can not delete answer' do
     visit question_path(question)
-    expect(page).to_not have_content 'Delete answer'
+    expect(page).to_not have_link 'Delete answer'
   end
 end
