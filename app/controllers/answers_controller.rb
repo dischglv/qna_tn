@@ -31,7 +31,7 @@ class AnswersController < ApplicationController
   end
 
   def destroy
-    answer.destroy if current_user.owes_resource(answer)
+    answer.destroy if current_user.author_of?(answer)
     redirect_to question_answers_path(answer.question)
   end
 

@@ -8,7 +8,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  def owes_resource(resource)
+  def author_of?(resource)
     resource.user_id == id
   end
 

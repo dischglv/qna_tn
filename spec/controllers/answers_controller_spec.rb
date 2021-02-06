@@ -100,7 +100,7 @@ RSpec.describe AnswersController, type: :controller do
       it 'does not change the answer' do
         answer.reload
 
-        expect(answer.body).to eq 'MyText'
+        expect(answer.body).to eq answer.body
       end
 
       it 're-renders edit view' do
@@ -129,7 +129,7 @@ RSpec.describe AnswersController, type: :controller do
       let!(:answer) { create(:answer) }
 
       it "doesn't delete the answer" do
-        expect { delete :destroy, params: { question_id: question, id: answer} }.to change(Answer, :count).by(0)
+        expect { delete :destroy, params: { question_id: question, id: answer} }.to_not change(Answer, :count)
       end
 
       it 'redirects to index' do
