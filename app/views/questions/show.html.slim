@@ -14,7 +14,7 @@ h2 = 'Answer the question'
 
 = render 'shared/errors', resource: answer
 
-= form_for answer, url: question_answers_path(question) do |f|
+= form_with model: [question, answer] do |f|
   = f.label :body, 'Answer body'
   = f.text_area :body
   = f.submit 'Answer'
