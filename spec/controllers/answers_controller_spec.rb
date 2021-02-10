@@ -51,23 +51,23 @@ RSpec.describe AnswersController, type: :controller do
 
     context 'with valid attributes' do
       it 'saves a new answer to the database' do
-        expect { post :create, params: { question_id: question, answer: { body: 'MyText' } } }.to change(question.answers, :count).by(1)
+        expect { post :create, params: { question_id: question, answer: { body: 'MyText' } }, format: :js }.to change(question.answers, :count).by(1)
       end
 
-      it 'redirects to question show view' do
-        post :create, params: { question_id: question, answer: { body: 'MyText' } }
-        expect(response).to redirect_to question_path(question)
+      it 'renders create js view' do
+        post :create, params: { question_id: question, answer: { body: 'MyText' } }, format: :js
+        expect(response).to render_template :create
       end
     end
 
     context 'with invalid attributes' do
       it 'does not save the answer' do
-        expect { post :create, params: { question_id: question, answer: { body: nil } } }.to_not change(question.answers, :count)
+        expect { post :create, params: { question_id: question, answer: { body: nil } }, format: :js }.to_not change(question.answers, :count)
       end
 
-      it 'renders question show view' do
-        post :create, params: { question_id: question, answer: { body: nil } }
-        expect(response).to render_template 'questions/show'
+      it 'renders create js view' do
+        post :create, params: { question_id: question, answer: { body: nil } }, format: :js
+        expect(response).to render_template :create
       end
     end
   end
