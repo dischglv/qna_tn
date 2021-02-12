@@ -10,7 +10,7 @@ feature 'User can delete his answer', %q{
   given(:question) { create(:question) }
   given!(:answer) { create(:answer, user: user1, question: question) }
 
-  scenario 'Authenticated user can delete his own answer' do
+  scenario 'Authenticated user can delete his own answer', js: true do
     sign_in(user1)
     visit question_path(question)
 
@@ -18,6 +18,7 @@ feature 'User can delete his answer', %q{
     click_on 'Delete answer'
 
     expect(page).to_not have_content answer.body
+    expect(current_path).to eql(question_path(question))
   end
 
   scenario "Authenticated user can not delete someone else's answer" do

@@ -19,8 +19,11 @@ class AnswersController < ApplicationController
   end
 
   def destroy
-    answer.destroy if current_user.author_of?(answer)
-    redirect_to question_answers_path(answer.question)
+    if current_user.author_of?(answer)
+      answer.destroy
+    else
+      render status: :forbidden
+    end
   end
 
   private

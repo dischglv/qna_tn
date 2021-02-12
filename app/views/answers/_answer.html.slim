@@ -7,7 +7,7 @@ li id = "answer-#{answer.id}"
     p = link_to 'Edit', '#', class: 'edit-answer-link', data: { answer_id: answer.id }
 
   - if current_user&.author_of?(answer)
-    p = link_to 'Delete answer', question_answer_path(question, answer), method: :delete
+    p = link_to 'Delete answer', question_answer_path(question, answer), method: :delete, remote: true
 
   = form_with model: [answer.question, answer], local: false, class: 'hidden', html: { id: "edit-answer-#{answer.id}" } do |f|
     = f.label :body, 'Your answer'

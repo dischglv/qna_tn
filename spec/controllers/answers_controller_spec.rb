@@ -100,28 +100,30 @@ RSpec.describe AnswersController, type: :controller do
     before { login(user) }
 
     context 'author of the answer' do
-      let!(:answer) { create(:answer, user: user) }
+      let!(:answer) { create(:answer, question: question, user: user) }
 
       it 'deletes the answer' do
-        expect { delete :destroy, params: { question_id: question, id: answer} }.to change(Answer, :count).by(-1)
+        expect { delete :destroy, params: { question_id: question, id: answer}, format: :js }.to change(question.answers, :count).by(-1)
       end
 
-      it 'redirects to index' do
-        delete :destroy, params: { question_id: question, id: answer}
-        expect(response).to redirect_to question_answers_path(answer.question)
+      it 'renders destroy view' do
+        delete :destroy, params: { question_id: question, id: answer}, format: :js
+        expect(response).to render_template :destroy
       end
     end
 
     context 'non-author of the answer' do
-      let!(:answer) { create(:answer) }
+      let!(:answer) { create(:answer, question: question) }
 
       it "doesn't delete the answer" do
-        expect { delete :destroy, params: { question_id: question, id: answer} }.to_not change(Answer, :count)
+        expect do
+          delete :destroy, params: { question_id: question, id: answer}, format: :js
+        end.to_not change(question.answers, :count)
       end
 
-      it 'redirects to index' do
-        delete :destroy, params: { question_id: question, id: answer}
-        expect(response).to redirect_to question_answers_path(answer.question)
+      it 'returns :forbidden status' do
+        delete :destroy, params: { question_id: question, id: answer}, format: :js
+        expect(response).to have_http_status :forbidden
       end
     end
   end
