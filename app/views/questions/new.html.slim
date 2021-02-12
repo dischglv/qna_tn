@@ -1,8 +1,10 @@
 = render 'shared/errors', resource: question
 
 = form_with model: question, local: true do |f|
-  = f.label :title
+  p = f.label :title
   = f.text_field :title
-  = f.label :body
+  p = f.label :body
   = f.text_area :body
-  = f.submit 'Ask'
+  p = f.submit 'Ask'
+
+p = link_to 'All questions', questions_path

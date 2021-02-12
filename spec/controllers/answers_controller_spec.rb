@@ -66,6 +66,7 @@ RSpec.describe AnswersController, type: :controller do
         it 'does not change the answer' do
           expect do
             patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer, :invalid) }, format: :js
+            answer.reload
           end.to_not change(answer, :body)
         end
 
@@ -82,10 +83,10 @@ RSpec.describe AnswersController, type: :controller do
       before { login(user2) }
 
       it "doesn't change the answer" do
-        patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' } }, format: :js
-        answer.reload
-
-        expect(answer.body).to_not eq 'new body'
+        expect do
+          patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' } }, format: :js
+          answer.reload
+        end.to_not change(answer, :body)
       end
 
       it 'returns a :forbidden status' do

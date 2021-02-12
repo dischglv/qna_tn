@@ -1,7 +1,20 @@
-p = link_to 'Log out', destroy_user_session_path, method: :delete
+- if user_signed_in?
+  p = link_to 'Log out', destroy_user_session_path, method: :delete
+- else
+  p = link_to 'Log in', new_user_session_path
 
-h1 = question.title
-p = question.body
+.question
+  div id = "question-#{question.id}"
+    h1 = question.title
+    p = question.body
+  - if current_user&.author_of?(question)
+    = link_to 'Edit', '#'
+    = form_with model: question, local: false do |f|
+      p = f.label :title
+      = f.text_field :title
+      p = f.label :body, 'Your question'
+      = f.text_area :body
+      p = f.submit 'Save'
 
 h2 = 'Answers'
 ul.answers
@@ -12,6 +25,8 @@ h2 = 'Answer the question'
 .answer-errors
 
 = form_with model: [question, answer], local: false, class: 'new-answer' do |f|
-  = f.label :body, 'Answer body'
+  p = f.label :body, 'Answer body'
   = f.text_area :body
-  = f.submit 'Answer'
+  p = f.submit 'Answer'
+
+p = link_to 'All questions', questions_path
