@@ -3,19 +3,7 @@ require 'rails_helper'
 RSpec.describe AnswersController, type: :controller do
   let(:question) { create(:question) }
   let(:user) { create(:user) }
-
-  describe 'GET #index' do
-    let(:answers) { create_list(:answer, 5) }
-
-    before { get :index, params: { question_id: question } }
-
-    it 'populates an array of all answers' do
-      expect(assigns(:answers)).to match_array(answers)
-    end
-    it 'renders index view' do
-      expect(response).to render_template :index
-    end
-  end
+  let(:user2) { create(:user) }
 
   describe 'GET #show' do
     let(:answer) { create(:answer) }
@@ -23,26 +11,6 @@ RSpec.describe AnswersController, type: :controller do
     it 'renders show view' do
       get :show, params: { id: answer, question_id: question }
       expect(response).to render_template :show
-    end
-  end
-
-  describe 'GET #new' do
-    before { login(user) }
-
-    it 'renders new view' do
-      get :new, params: { question_id: question }
-      expect(response).to render_template :new
-    end
-  end
-
-  describe 'GET #edit' do
-    before { login(user) }
-
-    let(:answer) { create(:answer) }
-
-    it 'renders edit view' do
-      get :edit, params: { question_id: question, id: answer }
-      expect(response).to render_template :edit
     end
   end
 
@@ -73,37 +41,56 @@ RSpec.describe AnswersController, type: :controller do
   end
 
   describe 'PATCH #update' do
-    before { login(user) }
+    context 'author of the answer' do
+      before { login(user) }
 
-    context 'with valid attributes' do
-      let(:answer) { create(:answer, question: question, user: user) }
+      context 'with valid attributes' do
+        let(:answer) { create(:answer, question: question, user: user) }
 
-      before { patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' } }, format: :js }
+        before { patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' } }, format: :js }
 
-      it 'changes answer attributes' do
-        answer.reload
+        it 'changes answer attributes' do
+          answer.reload
 
-        expect(answer.body).to eq 'new body'
-        expect(answer.question_id).to eq question.id
+          expect(answer.body).to eq 'new body'
+        end
+
+        it 'renders update view' do
+          expect(response).to render_template :update
+        end
       end
 
-      it 'renders update view' do
-        expect(response).to render_template :update
+      context 'with invalid attributes' do
+        let(:answer) { create(:answer, question: question, user: user) }
+
+        it 'does not change the answer' do
+          expect do
+            patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer, :invalid) }, format: :js
+          end.to_not change(answer, :body)
+        end
+
+        it 'renders update view' do
+          patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer, :invalid) }, format: :js
+          expect(response).to render_template :update
+        end
       end
     end
 
-    context 'with invalid attributes' do
-      let(:answer) { create(:answer) }
+    context 'non-author of the answer' do
+      let(:answer) { create(:answer, question: question, user: user) }
 
-      it 'does not change the answer' do
-        expect do
-          patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer, :invalid) }, format: :js
-        end.to_not change(answer, :body)
+      before { login(user2) }
+
+      it "doesn't change the answer" do
+        patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' } }, format: :js
+        answer.reload
+
+        expect(answer.body).to_not eq 'new body'
       end
 
-      it 'renders update view' do
-        patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer, :invalid) }, format: :js
-        expect(response).to render_template :update
+      it 'returns a :forbidden status' do
+        patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer) }, format: :js
+        expect(response).to have_http_status(:forbidden)
       end
     end
   end

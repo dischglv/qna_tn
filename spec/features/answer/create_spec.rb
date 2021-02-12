@@ -23,8 +23,6 @@ feature 'User can answer a question', %q{
       within '.answers' do
         expect(page).to have_content 'answer body'
       end
-
-      expect(page).to have_content 'Your answer successfully created'
     end
 
     scenario 'answers the question with errors' do

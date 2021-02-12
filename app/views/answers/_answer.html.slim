@@ -1,12 +1,15 @@
-li = answer.body
+li id = "answer-#{answer.id}"
+  .answer-errors
 
-- if user_signed_in?
-  p = link_to 'Edit', '#', class: 'edit-answer-link', data: { answer_id: answer.id }
+  = answer.body
 
-- if current_user&.author_of?(answer)
-  p = link_to 'Delete answer', question_answer_path(question, answer), method: :delete
+  - if current_user&.author_of?(answer)
+    p = link_to 'Edit', '#', class: 'edit-answer-link', data: { answer_id: answer.id }
 
-= form_with model: [answer.question, answer], local: false, class: 'hidden', html: { id: "edit-answer-#{answer.id}" } do |f|
-  = f.label :body, 'Your answer'
-  = f.text_area :body
-  = f.submit 'Save'
+  - if current_user&.author_of?(answer)
+    p = link_to 'Delete answer', question_answer_path(question, answer), method: :delete
+
+  = form_with model: [answer.question, answer], local: false, class: 'hidden', html: { id: "edit-answer-#{answer.id}" } do |f|
+    = f.label :body, 'Your answer'
+    = f.text_area :body
+    = f.submit 'Save'

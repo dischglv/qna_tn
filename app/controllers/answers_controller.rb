@@ -1,15 +1,7 @@
 class AnswersController < ApplicationController
-  before_action :authenticate_user!, except: [:index, :show]
-
-  def index
-    @answers = Answer.all
-  end
+  before_action :authenticate_user!, except: :show
 
   def show; end
-
-  def new; end
-
-  def edit; end
 
   def create
     @answer = question.answers.new(answer_params)
@@ -19,7 +11,11 @@ class AnswersController < ApplicationController
   end
 
   def update
-    answer.update(answer_params)
+    if current_user.author_of?(answer)
+      answer.update(answer_params)
+    else
+      render status: :forbidden
+    end
   end
 
   def destroy
