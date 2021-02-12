@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe QuestionsController, type: :controller do
   let(:user) { create(:user) }
+  let(:user2) { create(:user) }
   let(:question) { create(:question, user: user) }
 
   describe 'GET #index' do
@@ -63,33 +64,51 @@ RSpec.describe QuestionsController, type: :controller do
   end
 
   describe 'PATCH #update' do
-    before { login(user) }
+    context 'author of the question' do
+      before { login(user) }
 
-    context 'with valid attributes' do
+      context 'with valid attributes' do
 
-      it 'changes question attributes' do
-        expect do
-          patch :update, params: { id: question, question: { title: 'new title', body: 'new body' } }, format: :js
-          question.reload
-        end.to change(question, :body)
+        it 'changes question attributes' do
+          expect do
+            patch :update, params: { id: question, question: { title: 'new title', body: 'new body' } }, format: :js
+            question.reload
+          end.to change(question, :body)
+        end
+
+        it 'renders update view' do
+          patch :update, params: { id: question, question: attributes_for(:question) }, format: :js
+          expect(response).to render_template :update
+        end
       end
+      context 'with invalid attributes' do
 
-      it 'renders update view' do
-        patch :update, params: { id: question, question: attributes_for(:question) }, format: :js
-        expect(response).to render_template :update
+        it 'does not change question' do
+          expect do
+            patch :update, params: { id: question, question: attributes_for(:question, :invalid) }, format: :js
+          end.to_not change(question, :body)
+        end
+
+        it 'renders update view' do
+          patch :update, params: { id: question, question: attributes_for(:question, :invalid) }, format: :js
+          expect(response).to render_template :update
+        end
       end
     end
-    context 'with invalid attributes' do
+
+    context 'non-author of the question' do
+      before { sign_in user2 }
 
       it 'does not change question' do
         expect do
-          patch :update, params: { id: question, question: attributes_for(:question, :invalid) }, format: :js
+          patch :update, params: { id: question, question: { body: 'new body' } }, format: :js
+          question.reload
         end.to_not change(question, :body)
       end
 
-      it 'renders update view' do
-        patch :update, params: { id: question, question: attributes_for(:question, :invalid) }, format: :js
-        expect(response).to render_template :update
+      it 'returns :forbidden status' do
+        patch :update, params: { id: question, question: attributes_for(:question) }, format: :js
+        expect(response).to have_http_status(:forbidden)
       end
     end
   end

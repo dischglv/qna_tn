@@ -27,16 +27,34 @@ feature 'User can edit his question', %q{
         click_on 'Edit'
         fill_in 'Your question', with: 'Edited question'
         click_on 'Save'
-        wait_for_ajax
 
-        save_and_open_page
         expect(page).to_not have_content question.body
         expect(page).to have_content 'Edited question'
         expect(page).to_not have_selector 'textarea'
       end
     end
 
-    scenario 'edits his question with errors'
-    scenario "can not edit other user's question"
+    scenario 'edits his question with errors' do
+      sign_in user
+      visit question_path(question)
+
+      within '.question' do
+        click_on 'Edit'
+        fill_in 'Your question', with: ''
+        click_on 'Save'
+
+        expect(page).to have_content question.body
+        expect(page).to have_content "Body can't be blank"
+      end
+    end
+
+    scenario "can not edit other user's question" do
+      sign_in user2
+      visit question_path(question)
+
+      within '.question' do
+        expect(page).to_not have_link 'Edit'
+      end
+    end
   end
 end

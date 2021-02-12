@@ -7,9 +7,10 @@
   div id = "question-#{question.id}"
     h1 = question.title
     p = question.body
+  .question-errors
   - if current_user&.author_of?(question)
-    = link_to 'Edit', '#'
-    = form_with model: question, local: false do |f|
+    = link_to 'Edit', '#', data: { question_id: question.id }, class: 'edit-question-link'
+    = form_with model: question, local: false, html: { id: "edit-question-#{question.id}" }, class: 'hidden' do |f|
       p = f.label :title
       = f.text_field :title
       p = f.label :body, 'Your question'
@@ -30,3 +31,6 @@ h2 = 'Answer the question'
   p = f.submit 'Answer'
 
 p = link_to 'All questions', questions_path
+
+= javascript_pack_tag 'answer'
+= javascript_pack_tag 'question'
