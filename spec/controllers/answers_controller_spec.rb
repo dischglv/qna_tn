@@ -5,6 +5,38 @@ RSpec.describe AnswersController, type: :controller do
   let(:user) { create(:user) }
   let(:user2) { create(:user) }
 
+  describe 'PATCH #best' do
+    let!(:question) { create(:question, user: user) }
+    let!(:answer_last_best) { create(:answer, question: question, best: true) }
+    let!(:answer) { create(:answer, question: question, user: user) }
+
+    context 'author of the question' do
+      before { login user }
+
+      it 'changes the best answer' do
+        expect { patch :best, params: { question_id: question, id: answer }, format: :js }.to change(question.answers, :best)
+      end
+
+      it 'renders best view' do
+        patch :best, params: { question_id: question, id: answer }, format: :js
+        expect(response).to render_template :best
+      end
+    end
+
+    context 'non-author of the question' do
+      before { login user2 }
+
+      it 'does not change the best answer' do
+        expect { patch :best, params: { question_id: question, id: answer }, format: :js }.to_not change(question.answers, :best)
+      end
+
+      it 'returns :forbidden status' do
+        patch :best, params: { question_id: question, id: answer }, format: :js
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
+
   describe 'GET #show' do
     let(:answer) { create(:answer) }
 

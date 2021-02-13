@@ -26,6 +26,14 @@ class AnswersController < ApplicationController
     end
   end
 
+  def best
+    if current_user.author_of?(question)
+      answer.make_best
+    else
+      render status: :forbidden
+    end
+  end
+
   private
 
   def answer

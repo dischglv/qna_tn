@@ -5,6 +5,7 @@ FactoryBot.define do
 
   factory :answer do
     body
+    best { false }
     question
     user
 

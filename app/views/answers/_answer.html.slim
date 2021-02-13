@@ -9,6 +9,9 @@ li id = "answer-#{answer.id}"
   - if current_user&.author_of?(answer)
     p = link_to 'Delete answer', question_answer_path(question, answer), method: :delete, remote: true
 
+  - if current_user&.author_of?(answer.question)
+    p = link_to 'Choose as best', best_question_answer_path(question, answer), method: :patch, remote: true
+
   = form_with model: [answer.question, answer], local: false, class: 'hidden', html: { id: "edit-answer-#{answer.id}" } do |f|
     = f.label :body, 'Your answer'
     = f.text_area :body
