@@ -11,12 +11,13 @@ class Answer < ApplicationRecord
 
   def make_best
     previous_best_answer = question.answers.best
+
     Answer.transaction do
       if previous_best_answer.present?
-        previous_best_answer.update(best: false)
+        previous_best_answer.update!(best: false)
       end
 
-      update(best: true)
+      update!(best: true)
     end
   end
 
