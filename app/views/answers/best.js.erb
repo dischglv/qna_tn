@@ -1,0 +1,4 @@
+<% if answer.persisted? %>
+  $('#answer-<%= answer.id %>').remove();
+  $('ul.answers').prepend('<%= j render answer %>');
+<% end %>

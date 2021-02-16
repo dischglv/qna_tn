@@ -3,17 +3,37 @@ require 'rails_helper'
 RSpec.describe AnswersController, type: :controller do
   let(:question) { create(:question) }
   let(:user) { create(:user) }
+  let(:user2) { create(:user) }
 
-  describe 'GET #index' do
-    let(:answers) { create_list(:answer, 5) }
+  describe 'PATCH #best' do
+    let!(:question) { create(:question, user: user) }
+    let!(:answer_last_best) { create(:answer, question: question, best: true) }
+    let!(:answer) { create(:answer, question: question, user: user) }
 
-    before { get :index, params: { question_id: question } }
+    context 'author of the question' do
+      before { login user }
 
-    it 'populates an array of all answers' do
-      expect(assigns(:answers)).to match_array(answers)
+      it 'changes the best answer' do
+        expect { patch :best, params: { question_id: question, id: answer }, format: :js }.to change(question.answers, :best)
+      end
+
+      it 'renders best view' do
+        patch :best, params: { question_id: question, id: answer }, format: :js
+        expect(response).to render_template :best
+      end
     end
-    it 'renders index view' do
-      expect(response).to render_template :index
+
+    context 'non-author of the question' do
+      before { login user2 }
+
+      it 'does not change the best answer' do
+        expect { patch :best, params: { question_id: question, id: answer }, format: :js }.to_not change(question.answers, :best)
+      end
+
+      it 'returns :forbidden status' do
+        patch :best, params: { question_id: question, id: answer }, format: :js
+        expect(response).to have_http_status(:forbidden)
+      end
     end
   end
 
@@ -26,85 +46,84 @@ RSpec.describe AnswersController, type: :controller do
     end
   end
 
-  describe 'GET #new' do
-    before { login(user) }
-
-    it 'renders new view' do
-      get :new, params: { question_id: question }
-      expect(response).to render_template :new
-    end
-  end
-
-  describe 'GET #edit' do
-    before { login(user) }
-
-    let(:answer) { create(:answer) }
-
-    it 'renders edit view' do
-      get :edit, params: { question_id: question, id: answer }
-      expect(response).to render_template :edit
-    end
-  end
-
   describe 'POST #create' do
     before { login(user) }
 
     context 'with valid attributes' do
       it 'saves a new answer to the database' do
-        expect { post :create, params: { question_id: question, answer: { body: 'MyText' } } }.to change(question.answers, :count).by(1)
+        expect { post :create, params: { question_id: question, answer: { body: 'MyText' } }, format: :js }.to change(question.answers, :count).by(1)
       end
 
-      it 'redirects to question show view' do
-        post :create, params: { question_id: question, answer: { body: 'MyText' } }
-        expect(response).to redirect_to question_path(question)
+      it 'renders create js view' do
+        post :create, params: { question_id: question, answer: { body: 'MyText' } }, format: :js
+        expect(response).to render_template :create
       end
     end
 
     context 'with invalid attributes' do
       it 'does not save the answer' do
-        expect { post :create, params: { question_id: question, answer: { body: nil } } }.to_not change(question.answers, :count)
+        expect { post :create, params: { question_id: question, answer: { body: nil } }, format: :js }.to_not change(question.answers, :count)
       end
 
-      it 'renders question show view' do
-        post :create, params: { question_id: question, answer: { body: nil } }
-        expect(response).to render_template 'questions/show'
+      it 'renders create js view' do
+        post :create, params: { question_id: question, answer: { body: nil } }, format: :js
+        expect(response).to render_template :create
       end
     end
   end
 
   describe 'PATCH #update' do
-    before { login(user) }
+    context 'author of the answer' do
+      before { login(user) }
 
-    context 'with valid attributes' do
-      let(:answer) { create(:answer, question: question, user: user) }
+      context 'with valid attributes' do
+        let(:answer) { create(:answer, question: question, user: user) }
 
-      before { patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' } } }
+        before { patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' } }, format: :js }
 
-      it 'changes answer attributes' do
-        answer.reload
+        it 'changes answer attributes' do
+          answer.reload
 
-        expect(answer.body).to eq 'new body'
-        expect(answer.question_id).to eq question.id
+          expect(answer.body).to eq 'new body'
+        end
+
+        it 'renders update view' do
+          expect(response).to render_template :update
+        end
       end
 
-      it 'redirects to updated answer' do
-        expect(response).to redirect_to question_answer_path(question, assigns(:answer))
+      context 'with invalid attributes' do
+        let(:answer) { create(:answer, question: question, user: user) }
+
+        it 'does not change the answer' do
+          expect do
+            patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer, :invalid) }, format: :js
+            answer.reload
+          end.to_not change(answer, :body)
+        end
+
+        it 'renders update view' do
+          patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer, :invalid) }, format: :js
+          expect(response).to render_template :update
+        end
       end
     end
 
-    context 'with invalid attributes' do
-      let(:answer) { create(:answer) }
+    context 'non-author of the answer' do
+      let(:answer) { create(:answer, question: question, user: user) }
 
-      before { patch :update, params: { question_id: question, id: answer, answer: { body: nil } } }
+      before { login(user2) }
 
-      it 'does not change the answer' do
-        answer.reload
-
-        expect(answer.body).to eq answer.body
+      it "doesn't change the answer" do
+        expect do
+          patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' } }, format: :js
+          answer.reload
+        end.to_not change(answer, :body)
       end
 
-      it 're-renders edit view' do
-        expect(response).to render_template :edit
+      it 'returns a :forbidden status' do
+        patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer) }, format: :js
+        expect(response).to have_http_status(:forbidden)
       end
     end
   end
@@ -113,28 +132,30 @@ RSpec.describe AnswersController, type: :controller do
     before { login(user) }
 
     context 'author of the answer' do
-      let!(:answer) { create(:answer, user: user) }
+      let!(:answer) { create(:answer, question: question, user: user) }
 
       it 'deletes the answer' do
-        expect { delete :destroy, params: { question_id: question, id: answer} }.to change(Answer, :count).by(-1)
+        expect { delete :destroy, params: { question_id: question, id: answer}, format: :js }.to change(question.answers, :count).by(-1)
       end
 
-      it 'redirects to index' do
-        delete :destroy, params: { question_id: question, id: answer}
-        expect(response).to redirect_to question_answers_path(answer.question)
+      it 'renders destroy view' do
+        delete :destroy, params: { question_id: question, id: answer}, format: :js
+        expect(response).to render_template :destroy
       end
     end
 
     context 'non-author of the answer' do
-      let!(:answer) { create(:answer) }
+      let!(:answer) { create(:answer, question: question) }
 
       it "doesn't delete the answer" do
-        expect { delete :destroy, params: { question_id: question, id: answer} }.to_not change(Answer, :count)
+        expect do
+          delete :destroy, params: { question_id: question, id: answer}, format: :js
+        end.to_not change(question.answers, :count)
       end
 
-      it 'redirects to index' do
-        delete :destroy, params: { question_id: question, id: answer}
-        expect(response).to redirect_to question_answers_path(answer.question)
+      it 'returns :forbidden status' do
+        delete :destroy, params: { question_id: question, id: answer}, format: :js
+        expect(response).to have_http_status :forbidden
       end
     end
   end

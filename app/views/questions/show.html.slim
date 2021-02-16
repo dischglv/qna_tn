@@ -1,20 +1,38 @@
-p = link_to 'Log out', destroy_user_session_path, method: :delete
+- if user_signed_in?
+  p = link_to 'Log out', destroy_user_session_path, method: :delete
+- else
+  p = link_to 'Log in', new_user_session_path
 
-h1 = question.title
-p = question.body
+.question
+  div id = "question-#{question.id}"
+    h1 = question.title
+    p = question.body
+  .question-errors
+  - if current_user&.author_of?(question)
+    = link_to 'Edit', '#', data: { question_id: question.id }, class: 'edit-question-link'
+    = form_with model: question, local: false, html: { id: "edit-question-#{question.id}" }, class: 'hidden' do |f|
+      p = f.label :title
+      = f.text_field :title
+      p = f.label :body, 'Your question'
+      = f.text_area :body
+      p = f.submit 'Save'
 
 h2 = 'Answers'
-ul
-  - question.answers.each do |a|
-    li = a.body
-    - if current_user&.author_of?(a)
-      = link_to 'Delete answer', question_answer_path(question, a), method: :delete
+ul.answers
+  - if question.answers.best.present?
+    = render question.answers.best
+  = render question.answers.where(best: false)
 
 h2 = 'Answer the question'
 
-= render 'shared/errors', resource: answer
+.answer-errors
 
-= form_for answer, url: question_answers_path(question) do |f|
-  = f.label :body, 'Answer body'
+= form_with model: [question, answer], local: false, class: 'new-answer' do |f|
+  p = f.label :body, 'Answer body'
   = f.text_area :body
-  = f.submit 'Answer'
+  p = f.submit 'Answer'
+
+p = link_to 'All questions', questions_path
+
+= javascript_pack_tag 'answer'
+= javascript_pack_tag 'question'

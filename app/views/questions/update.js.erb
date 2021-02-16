@@ -1,0 +1,7 @@
+$('.question-errors').html('<%= render 'shared/errors', resource: question %>');
+
+<% if !question.errors.present? %>
+  $("#question-<%= question.id %>").html('<h1> <%= j question.title %> </h1> <p> <%= j question.body %> </p>');
+  $('form#edit-question-<%= question.id %>').hide();
+  $('.edit-question-link').show();
+<% end %>

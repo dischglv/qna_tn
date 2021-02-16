@@ -1,38 +1,37 @@
 class AnswersController < ApplicationController
-  before_action :authenticate_user!, except: [:index, :show]
-
-  def index
-    @answers = Answer.all
-  end
+  before_action :authenticate_user!, except: :show
 
   def show; end
-
-  def new; end
-
-  def edit; end
 
   def create
     @answer = question.answers.new(answer_params)
     @answer.user = current_user
 
-    if @answer.save
-      redirect_to question_path(question), notice: 'Your answer successfully created'
-    else
-      render 'questions/show'
-    end
+    @answer.save
   end
 
   def update
-    if answer.update(answer_params)
-      redirect_to question_answer_path(answer.question, answer)
+    if current_user.author_of?(answer)
+      answer.update(answer_params)
     else
-      render :edit
+      render status: :forbidden
     end
   end
 
   def destroy
-    answer.destroy if current_user.author_of?(answer)
-    redirect_to question_answers_path(answer.question)
+    if current_user.author_of?(answer)
+      answer.destroy
+    else
+      render status: :forbidden
+    end
+  end
+
+  def best
+    if current_user.author_of?(question)
+      answer.make_best
+    else
+      render status: :forbidden
+    end
   end
 
   private
