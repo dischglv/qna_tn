@@ -7,7 +7,13 @@
   div id = "question-#{question.id}"
     h1 = question.title
     p = question.body
+
+  - if question.files.attached?
+    - question.files.each do |file|
+      p = link_to file.filename.to_s, url_for(file)
+
   .question-errors
+
   - if current_user&.author_of?(question)
     = link_to 'Edit', '#', data: { question_id: question.id }, class: 'edit-question-link'
     = form_with model: question, local: false, html: { id: "edit-question-#{question.id}" }, class: 'hidden' do |f|
