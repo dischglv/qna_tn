@@ -48,6 +48,21 @@ feature 'User can edit his question', %q{
       end
     end
 
+    scenario 'edits his question with attached files' do
+      sign_in user
+      visit question_path(question)
+
+      within '.question' do
+        click_on 'Edit'
+        fill_in 'Your question', with: 'Edited question'
+        attach_file 'File', ["#{Rails.root}/spec/rails_helper.rb", "#{Rails.root}/spec/spec_helper.rb"]
+        click_on 'Save'
+
+        expect(page).to have_link 'rails_helper.rb'
+        expect(page).to have_link 'spec_helper.rb'
+      end
+    end
+
     scenario "can not edit other user's question" do
       sign_in user2
       visit question_path(question)

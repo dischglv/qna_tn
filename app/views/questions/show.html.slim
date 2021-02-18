@@ -8,9 +8,8 @@
     h1 = question.title
     p = question.body
 
-  - if question.files.attached?
-    - question.files.each do |file|
-      p = link_to file.filename.to_s, url_for(file)
+  .files
+    = render partial: 'shared/file', collection: question.files
 
   .question-errors
 
@@ -21,6 +20,8 @@
       = f.text_field :title
       p = f.label :body, 'Your question'
       = f.text_area :body
+      p = f.label :files
+      = f.file_field :files, multiple: true, direct_upload: true
       p = f.submit 'Save'
 
 h2 = 'Answers'
@@ -36,6 +37,8 @@ h2 = 'Answer the question'
 = form_with model: [question, answer], local: false, class: 'new-answer' do |f|
   p = f.label :body, 'Answer body'
   = f.text_area :body
+  p = f.label :files
+  = f.file_field :files, multiple: true, direct_upload: true
   p = f.submit 'Answer'
 
 p = link_to 'All questions', questions_path
