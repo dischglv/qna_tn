@@ -63,6 +63,29 @@ feature 'User can edit his question', %q{
       end
     end
 
+    scenario 'deletes his attachments' do
+      question.files.attach(io: File.open("#{Rails.root}/spec/rails_helper.rb"), filename: 'rails_helper.rb')
+
+      sign_in user
+      visit question_path(question)
+
+      within '.question .files' do
+        click_on 'Delete file'
+        expect(page).to_not have_link 'rails_helper.rb'
+      end
+    end
+
+    scenario "tries to delete other user's attachment" do
+      question.files.attach(io: File.open("#{Rails.root}/spec/rails_helper.rb"), filename: 'rails_helper.rb')
+
+      sign_in user2
+      visit question_path(question)
+
+      within '.question .files' do
+        expect(page).to_not have_link 'Delete file'
+      end
+    end
+
     scenario "can not edit other user's question" do
       sign_in user2
       visit question_path(question)
