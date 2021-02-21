@@ -11,6 +11,13 @@
   .files
     = render partial: 'shared/file', collection: question.files
 
+  .links
+    - if question.links.present?
+      p Links:
+      ul
+        - question.links.each do |l|
+          li = link_to l.name, l.url
+
   .question-errors
 
   - if current_user&.author_of?(question)

@@ -9,6 +9,7 @@ class QuestionsController < ApplicationController
   end
 
   def new
+    question.links.build
   end
 
   def create
@@ -49,6 +50,6 @@ class QuestionsController < ApplicationController
   helper_method :answer
 
   def question_params
-    params.require(:question).permit(:title, :body, files: [])
+    params.require(:question).permit(:title, :body, links_attributes: [:name, :url], files: [])
   end
 end
