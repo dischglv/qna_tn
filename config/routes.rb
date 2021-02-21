@@ -9,5 +9,7 @@ Rails.application.routes.draw do
     end
   end
 
+  delete 'files/:id', to: 'files#destroy', as: 'files'
+
   root to: 'questions#index'
 end

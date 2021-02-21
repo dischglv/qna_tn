@@ -7,7 +7,12 @@
   div id = "question-#{question.id}"
     h1 = question.title
     p = question.body
+
+  .files
+    = render partial: 'shared/file', collection: question.files
+
   .question-errors
+
   - if current_user&.author_of?(question)
     = link_to 'Edit', '#', data: { question_id: question.id }, class: 'edit-question-link'
     = form_with model: question, local: false, html: { id: "edit-question-#{question.id}" }, class: 'hidden' do |f|
@@ -15,6 +20,8 @@
       = f.text_field :title
       p = f.label :body, 'Your question'
       = f.text_area :body
+      p = f.label :files
+      = f.file_field :files, multiple: true, direct_upload: true
       p = f.submit 'Save'
 
 h2 = 'Answers'
@@ -30,6 +37,8 @@ h2 = 'Answer the question'
 = form_with model: [question, answer], local: false, class: 'new-answer' do |f|
   p = f.label :body, 'Answer body'
   = f.text_area :body
+  p = f.label :files
+  = f.file_field :files, multiple: true, direct_upload: true
   p = f.submit 'Answer'
 
 p = link_to 'All questions', questions_path

@@ -3,6 +3,9 @@ li id = "answer-#{answer.id}"
 
   = answer.body
 
+  .files
+    = render partial: 'shared/file', collection: answer.files
+
   - if current_user&.author_of?(answer)
     p = link_to 'Edit', '#', class: 'edit-answer-link', data: { answer_id: answer.id }
 
@@ -15,4 +18,6 @@ li id = "answer-#{answer.id}"
   = form_with model: [answer.question, answer], local: false, class: 'hidden', html: { id: "edit-answer-#{answer.id}" } do |f|
     = f.label :body, 'Your answer'
     = f.text_area :body
+    p = f.label :files
+    = f.file_field :files, multiple: true, direct_upload: true
     = f.submit 'Save'

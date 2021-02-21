@@ -1,6 +1,7 @@
 $('#answer-<%= answer.id %> .answer-errors').html('<%= render 'shared/errors', resource: answer %>');
 
 <% unless answer.errors.present? %>
-  $('#answer-' + '<%= answer.id %>').html('<%= j render answer %>')
+  $('#answer-' + '<%= answer.id %>').html('<%= j render answer %>');
+  $('#answer-' + '<%= answer.id %> .files').html('<%= j render partial: 'shared/file', collection: answer.files %>');
   $('form#edit-answer-' + '<%= answer.id %>').hide();
 <% end %>
