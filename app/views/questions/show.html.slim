@@ -48,12 +48,9 @@ h2 = 'Answer the question'
   = f.file_field :files, multiple: true, direct_upload: true
   p Links:
   p = f.fields_for :links do |l|
-    p
-      = l.label :name, 'Link name'
-      = l.text_field :name
-    p
-      = l.label :url
-      = l.text_field :url
+    = render 'link_fields', f: l
+  .add-links
+    = link_to_add_association 'Add link', f, :links, partial: 'link_fields'
   p = f.submit 'Answer'
 
 p = link_to 'All questions', questions_path
