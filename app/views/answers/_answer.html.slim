@@ -6,6 +6,13 @@ li id = "answer-#{answer.id}"
   .files
     = render partial: 'shared/file', collection: answer.files
 
+  .links
+    - if answer.links.present?
+      p Links:
+      ul
+        - answer.links.each do |l|
+          li = link_to l.name, l.url
+
   - if current_user&.author_of?(answer)
     p = link_to 'Edit', '#', class: 'edit-answer-link', data: { answer_id: answer.id }
 
