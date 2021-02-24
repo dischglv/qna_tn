@@ -11,7 +11,7 @@ RSpec.describe FilesController, type: :controller do
     context 'author of the file' do
       before { login(user) }
 
-      it 'deletes the answer' do
+      it 'deletes the file' do
         expect { delete :destroy, params: { id: question.files.first }, format: :js }.to change(question.files, :count).by(-1)
       end
 
@@ -21,10 +21,10 @@ RSpec.describe FilesController, type: :controller do
       end
     end
 
-    context 'non-author of the answer' do
+    context 'non-author of the file' do
       before { login(user2) }
 
-      it "doesn't delete the answer" do
+      it "doesn't delete the file" do
         expect do
           delete :destroy, params: { id: question.files.first }, format: :js
         end.to_not change(question.files, :count)

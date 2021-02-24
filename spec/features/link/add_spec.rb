@@ -2,7 +2,7 @@ require 'rails_helper'
 
 feature 'User can add links to question', %q{
   In order to provide additional info to my question
-  As a question's author
+  As an author of answer or question
   I'd like to be able to add links
 } do
 

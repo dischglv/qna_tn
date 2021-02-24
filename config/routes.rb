@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'links/destroy'
   devise_for :users
 
   resources :questions, except: :edit do
@@ -10,6 +11,7 @@ Rails.application.routes.draw do
   end
 
   delete 'files/:id', to: 'files#destroy', as: 'files'
+  delete 'links/:id', to: 'links#destroy', as: 'link'
 
   root to: 'questions#index'
 end
