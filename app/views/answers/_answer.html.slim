@@ -30,4 +30,8 @@ li id = "answer-#{answer.id}"
     = f.text_area :body
     p = f.label :files
     = f.file_field :files, multiple: true, direct_upload: true
+    p = f.fields_for :links do |l|
+      = render partial: 'shared/link_fields', locals: { f: l }
+    .add-links
+      = link_to_add_association 'Add link', f, :links, partial: 'shared/link_fields'
     = f.submit 'Save'

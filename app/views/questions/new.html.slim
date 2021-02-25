@@ -9,7 +9,7 @@
   = f.file_field :files, multiple: true, direct_upload: true
   p Links:
   p = f.fields_for :links do |l|
-    = render 'link_fields', f: l
+    = render partial: 'shared/link_fields', locals: { f: l }
   .add-links
     = link_to_add_association 'Add link', f, :links
   p = f.submit 'Ask'

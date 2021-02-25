@@ -7,7 +7,7 @@ feature 'User can add links to question', %q{
 } do
 
   given(:user) { create(:user) }
-  given(:question) { create(:question) }
+  given(:question) { create(:question, user: user) }
   given(:google_url) { 'https://google.com/' }
   given(:yandex_url) { 'https://ya.ru' }
 
@@ -24,6 +24,23 @@ feature 'User can add links to question', %q{
     click_on 'Ask'
 
     expect(page).to have_link 'Google site', href: google_url
+  end
+
+  scenario 'User adds link when edits question', js: true do
+    sign_in user
+    visit question_path(question)
+
+    within '.question' do
+      click_on 'Edit'
+      click_on 'Add link'
+
+      fill_in 'Link name', with: 'Google'
+      fill_in 'Url', with: google_url
+
+      click_on 'Save'
+
+      expect(page).to have_link 'Google', href: google_url
+    end
   end
 
   scenario 'User adds several links when asks question', js: true do
@@ -65,16 +82,38 @@ feature 'User can add links to question', %q{
     end
   end
 
+  scenario 'User adds links when edits answer', js: true do
+    create(:answer, question: question, user: user)
+    sign_in user
+    visit question_path(question)
+
+    within '.answers' do
+      click_on 'Edit'
+      click_on 'Add link'
+
+      fill_in 'Link name', with: 'Google'
+      fill_in 'Url', with: google_url
+
+      click_on 'Save'
+
+      expect(page).to have_link 'Google', href: google_url
+    end
+
+  end
+
   scenario 'User adds several links when asks answer', js: true do
     sign_in user
     visit question_path(question)
 
-    fill_in 'Answer body', with: 'answer body'
+    within 'form.new-answer' do
+      fill_in 'Answer body', with: 'answer body'
 
-    fill_in 'Link name', with: 'Google'
-    fill_in 'Url', with: google_url
+      fill_in 'Link name', with: 'Google'
+      fill_in 'Url', with: google_url
 
-    click_on 'Add link'
+
+      click_on 'Add link'
+    end
 
     within '.nested-fields:nth-of-type(2)' do
       fill_in 'Link name', with: 'Yandex'
