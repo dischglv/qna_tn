@@ -5,6 +5,7 @@ div id = "question-#{question.id}"
   .files
     = render partial: 'shared/file', collection: question.files
 
+  .link-errors
   .links
     - if question.links.present?
       p Links:

@@ -8,6 +8,7 @@ li id = "answer-#{answer.id}"
   .files
     = render partial: 'shared/file', collection: answer.files
 
+  .link-errors
   .links
     - if answer.links.present?
       p Links:

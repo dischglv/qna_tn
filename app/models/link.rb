@@ -7,8 +7,11 @@ class Link < ApplicationRecord
   validate :validates_url_format
 
   def validates_url_format
-    URI.parse(url)
+    uri = URI.parse(url)
+    unless uri.is_a?(URI::HTTP) && !uri.host.nil?
+      errors.add(:url, 'must be valid')
+    end
   rescue URI::InvalidURIError
-    errors.add(:url, 'url must be valid')
+    errors.add(:url, 'must be valid')
   end
 end
