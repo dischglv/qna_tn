@@ -11,6 +11,8 @@ div id = "question-#{question.id}"
       ul
         - question.links.each do |l|
           li id="link-#{l.id}"
+            - if gist?(l.url)
+              script src="#{l.url}.js"
             = link_to l.name, l.url
             - if current_user&.author_of?(question)
               = link_to 'Delete link', link_path(l), method: :delete, remote: true
