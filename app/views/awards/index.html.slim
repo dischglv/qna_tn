@@ -1,0 +1,11 @@
+h1 All your awards:
+
+- @awards.each do |award|
+  ul id="award-#{award.id}"
+    li
+      p = award.title
+      div.image
+        = image_tag url_for(award.image)
+        p = award.image.filename
+
+p = link_to 'All questions', questions_path
