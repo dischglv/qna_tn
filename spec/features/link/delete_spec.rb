@@ -8,14 +8,14 @@ feature 'User can delete his link', %q{
 
   given(:user) { create(:user) }
   given(:user2) { create(:user) }
-  given(:question) { create(:question, user: user, links_attributes: [{name: 'Google', url: 'google.com'}]) }
-  given!(:answer) { create(:answer, question: question, user: user, links_attributes: [{name: 'Yandex', url: 'yandex.ru'}]) }
+  given(:question) { create(:question, user: user, links_attributes: [{name: 'Google', url: 'https://google.com'}]) }
+  given!(:answer) { create(:answer, question: question, user: user, links_attributes: [{name: 'Yandex', url: 'https://yandex.ru'}]) }
 
   scenario 'User can delete his link from question', js: true do
     sign_in user
     visit question_path(question)
 
-    within '.question > .links' do
+    within '.question .links' do
       click_on 'Delete link'
 
       expect(page).to_not have_link 'Google'
@@ -37,7 +37,7 @@ feature 'User can delete his link', %q{
     sign_in user2
     visit question_path(question)
 
-    within ".question > .links" do
+    within ".question .links" do
       expect(page).to_not have_link "Delete link"
     end
   end

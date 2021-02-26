@@ -8,7 +8,6 @@ class Award < ApplicationRecord
   has_one_attached :image
 
   def reward_best(user)
-    self.user = user
-    self.save
+    update(user: user)
   end
 end

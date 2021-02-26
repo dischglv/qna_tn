@@ -29,7 +29,6 @@ class AnswersController < ApplicationController
   def best
     if current_user.author_of?(question)
       answer.make_best
-      question.award&.reward_best(answer.user)
     else
       render status: :forbidden
     end

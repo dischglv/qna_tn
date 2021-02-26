@@ -13,7 +13,7 @@ feature 'User can view his awards', %q{
 
   scenario 'User can view his awards' do
     sign_in user
-    visit awards_index_path
+    visit awards_path
 
     expect(page).to have_content award.title
     expect(page).to have_content 'award_pic'

@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-  get 'awards/index'
-  get 'links/destroy'
   devise_for :users
 
   resources :questions, except: :edit do
@@ -11,10 +9,12 @@ Rails.application.routes.draw do
     end
   end
 
-  resource :awards, only: :index
+  resources :awards, only: :index
+  resources :files, only: :destroy
+  resources :links, only: :destroy
 
-  delete 'files/:id', to: 'files#destroy', as: 'files'
-  delete 'links/:id', to: 'links#destroy', as: 'link'
+  # delete 'files/:id', to: 'files#destroy', as: 'files'
+  # delete 'links/:id', to: 'links#destroy', as: 'link'
 
   root to: 'questions#index'
 end

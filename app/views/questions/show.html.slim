@@ -1,7 +1,7 @@
 - if user_signed_in?
   p = link_to 'Log out', destroy_user_session_path, method: :delete
   |
-  p = link_to 'Your awards', awards_index_path
+  p = link_to 'Your awards', awards_path
 - else
   p = link_to 'Log in', new_user_session_path
 

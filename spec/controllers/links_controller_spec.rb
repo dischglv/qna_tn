@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe LinksController, type: :controller do
   let(:user) { create(:user) }
   let(:user2) { create(:user) }
-  let(:question) { create(:question, user: user, links_attributes: [{name: 'Google', url: 'google.com'}]) }
+  let(:question) { create(:question, user: user, links_attributes: [{name: 'Google', url: 'https://google.com'}]) }
 
   describe 'DELETE #destroy' do
 
