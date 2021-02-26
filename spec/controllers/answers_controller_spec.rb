@@ -8,18 +8,40 @@ RSpec.describe AnswersController, type: :controller do
   describe 'PATCH #best' do
     let!(:question) { create(:question, user: user) }
     let!(:answer_last_best) { create(:answer, question: question, best: true) }
-    let!(:answer) { create(:answer, question: question, user: user) }
+    let!(:answer) { create(:answer, question: question) }
 
     context 'author of the question' do
       before { login user }
 
-      it 'changes the best answer' do
-        expect { patch :best, params: { question_id: question, id: answer }, format: :js }.to change(question.answers, :best)
+      context 'question exists with award' do
+        let!(:award) { create(:award, question: question) }
+
+        it 'changes the best answer' do
+          expect { patch :best, params: { question_id: question, id: answer }, format: :js }.to change(question.answers, :best)
+        end
+
+        it 'assigns award to the user' do
+          patch :best, params: { question_id: question, id: answer }, format: :js
+          award.reload
+
+          expect(award.user).to eq answer.user
+        end
+
+        it 'renders best view' do
+          patch :best, params: { question_id: question, id: answer }, format: :js
+          expect(response).to render_template :best
+        end
       end
 
-      it 'renders best view' do
-        patch :best, params: { question_id: question, id: answer }, format: :js
-        expect(response).to render_template :best
+      context 'question exists without award' do
+        it 'changes the best answer' do
+          expect { patch :best, params: { question_id: question, id: answer }, format: :js }.to change(question.answers, :best)
+        end
+
+        it 'renders best view' do
+          patch :best, params: { question_id: question, id: answer }, format: :js
+          expect(response).to render_template :best
+        end
       end
     end
 

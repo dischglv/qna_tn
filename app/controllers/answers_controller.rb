@@ -29,6 +29,7 @@ class AnswersController < ApplicationController
   def best
     if current_user.author_of?(question)
       answer.make_best
+      question.award&.reward_best(answer.user)
     else
       render status: :forbidden
     end
@@ -41,7 +42,7 @@ class AnswersController < ApplicationController
   end
 
   def question
-    @question = Question.find(params[:question_id])
+    @question ||= Question.find(params[:question_id])
   end
 
   helper_method :answer

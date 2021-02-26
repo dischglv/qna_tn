@@ -1,7 +1,9 @@
 li id = "answer-#{answer.id}"
   .answer-errors
 
-  = answer.body
+  p = answer.user.email + ' answers: '
+
+  p = answer.body
 
   .files
     = render partial: 'shared/file', collection: answer.files
@@ -15,6 +17,9 @@ li id = "answer-#{answer.id}"
             = link_to l.name, l.url
             - if current_user&.author_of?(answer)
               = link_to 'Delete link', link_path(l), method: :delete, remote: true
+
+  - if answer.user.awards.include? question.award
+    b AWARDED
 
   - if current_user&.author_of?(answer)
     p = link_to 'Edit', '#', class: 'edit-answer-link', data: { answer_id: answer.id }
