@@ -1,15 +1,12 @@
 - if user_signed_in?
   p = link_to 'Log out', destroy_user_session_path, method: :delete
+  |
+  p = link_to 'Your awards', awards_path
 - else
   p = link_to 'Log in', new_user_session_path
 
 .question
-  div id = "question-#{question.id}"
-    h1 = question.title
-    p = question.body
-
-  .files
-    = render partial: 'shared/file', collection: question.files
+  = render question
 
   .question-errors
 
@@ -22,6 +19,10 @@
       = f.text_area :body
       p = f.label :files
       = f.file_field :files, multiple: true, direct_upload: true
+      p = f.fields_for :links do |l|
+        = render partial: 'shared/link_fields', locals: { f: l }
+      .add-links
+        = link_to_add_association 'Add link', f, :links, partial: 'shared/link_fields'
       p = f.submit 'Save'
 
 h2 = 'Answers'
@@ -39,6 +40,11 @@ h2 = 'Answer the question'
   = f.text_area :body
   p = f.label :files
   = f.file_field :files, multiple: true, direct_upload: true
+  p Links:
+  p = f.fields_for :links do |l|
+    = render partial: 'shared/link_fields', locals: { f: l }
+  .add-links
+    = link_to_add_association 'Add link', f, :links, partial: 'shared/link_fields'
   p = f.submit 'Answer'
 
 p = link_to 'All questions', questions_path

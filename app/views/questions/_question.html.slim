@@ -1,2 +1,28 @@
-h3 = question.title
-p = question.body
+div id = "question-#{question.id}"
+  h1 = question.title
+  p = question.body
+
+  .files
+    = render partial: 'shared/file', collection: question.files
+
+  .link-errors
+  .links
+    - if question.links.present?
+      p Links:
+      ul
+        - question.links.each do |l|
+          li id="link-#{l.id}"
+            - if gist?(l.url)
+              script src="#{l.url}.js"
+            = link_to l.name, l.url
+            - if current_user&.author_of?(question)
+              = link_to 'Delete link', link_path(l), method: :delete, remote: true
+
+  .award
+    - unless question.award.nil?
+      p
+        b Award for the best answer
+      p = question.award.title
+      br
+      = image_tag url_for(question.award.image)
+

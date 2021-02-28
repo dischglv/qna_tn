@@ -9,7 +9,9 @@ Rails.application.routes.draw do
     end
   end
 
-  delete 'files/:id', to: 'files#destroy', as: 'files'
+  resources :awards, only: :index
+  resources :files, only: :destroy
+  resources :links, only: :destroy
 
   root to: 'questions#index'
 end

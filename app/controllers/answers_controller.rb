@@ -41,7 +41,7 @@ class AnswersController < ApplicationController
   end
 
   def question
-    @question = Question.find(params[:question_id])
+    @question ||= Question.find(params[:question_id])
   end
 
   helper_method :answer
@@ -49,6 +49,6 @@ class AnswersController < ApplicationController
   helper_method :question
 
   def answer_params
-    params.require(:answer).permit(:body, files: [])
+    params.require(:answer).permit(:body, files: [], links_attributes: [:name, :url])
   end
 end

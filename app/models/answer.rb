@@ -1,8 +1,11 @@
 class Answer < ApplicationRecord
   belongs_to :question
   belongs_to :user
+  has_many :links, dependent: :destroy, as: :linkable
 
   has_many_attached :files
+
+  accepts_nested_attributes_for :links, reject_if: :all_blank
 
   validates :body, presence: true
   validate :validates_only_best_answer
@@ -18,6 +21,7 @@ class Answer < ApplicationRecord
       if previous_best_answer.present?
         previous_best_answer.update!(best: false)
       end
+      question.award&.reward_best(user)
 
       update!(best: true)
     end
