@@ -35,27 +35,71 @@ RSpec.describe Answer, type: :model do
     let!(:answer_new_best) { create(:answer, best: false, question: question) }
 
     context 'previous best exists' do
-      let!(:answer_previous_best) { create(:answer, best: true, question: question) }
+      context 'award for the question exists' do
+        let!(:answer_previous_best) { create(:answer, best: true, question: question) }
+        let!(:award) { create(:award, question: question) }
 
-      before { answer_new_best.make_best }
+        before { answer_new_best.make_best }
 
-      it 'sets attribute best to true for the answer' do
-        answer_new_best.reload
-        expect(answer_new_best.best).to be_truthy
+        it 'sets attribute best to true for the answer' do
+          answer_new_best.reload
+          expect(answer_new_best.best).to be_truthy
+        end
+
+        it 'sets attribute best to false for the last best answer' do
+          answer_previous_best.reload
+          expect(answer_previous_best.best).to be_falsey
+        end
+
+        it 'rewards the best user' do
+          award.reload
+
+          expect(award.user).to eq answer_new_best.user
+        end
       end
 
-      it 'sets attribute best to false for the last best answer' do
-        answer_previous_best.reload
-        expect(answer_previous_best.best).to be_falsey
+      context 'award for the question does not exists' do
+        let!(:answer_previous_best) { create(:answer, best: true, question: question) }
+
+        before { answer_new_best.make_best }
+
+        it 'sets attribute best to true for the answer' do
+          answer_new_best.reload
+          expect(answer_new_best.best).to be_truthy
+        end
+
+        it 'sets attribute best to false for the last best answer' do
+          answer_previous_best.reload
+          expect(answer_previous_best.best).to be_falsey
+        end
       end
     end
 
     context 'previous best does not exist' do
-      before { answer_new_best.make_best }
+      context 'award for the question exists' do
+        let!(:award) { create(:award, question: question) }
 
-      it 'sets attribute best to true for the answer' do
-        answer_new_best.reload
-        expect(answer_new_best.best).to be_truthy
+        before { answer_new_best.make_best }
+
+        it 'sets attribute best to true for the answer' do
+          answer_new_best.reload
+          expect(answer_new_best.best).to be_truthy
+        end
+
+        it 'rewards the best user' do
+          award.reload
+
+          expect(award.user).to eq answer_new_best.user
+        end
+      end
+
+      context 'award for the question does not exists' do
+        before { answer_new_best.make_best }
+
+        it 'sets attribute best to true for the answer' do
+          answer_new_best.reload
+          expect(answer_new_best.best).to be_truthy
+        end
       end
     end
   end
