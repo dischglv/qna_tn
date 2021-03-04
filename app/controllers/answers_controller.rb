@@ -1,6 +1,8 @@
 class AnswersController < ApplicationController
   before_action :authenticate_user!, except: :show
 
+  include Voted
+
   def show; end
 
   def create
