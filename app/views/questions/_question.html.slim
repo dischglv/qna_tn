@@ -46,19 +46,4 @@ div id = "question-#{question.id}"
       p.award__title = question.award.title
 
   - if user_signed_in?
-    .votes
-      .votes__errors
-      .votes__votes-for
-        = link_to 'Vote for', vote_for_question_path(question), method: :patch, remote: true, data: { id: question.id, resource_type: 'Question', type: :json }
-        .votes__votes-for-count
-          = Vote.where(votable: question).where(value: true).count
-      .votes__votes-against
-        = link_to 'Vote against', vote_against_question_path(question), method: :patch, remote: true, data: { id: question.id, resource_type: 'Question', type: :json }
-        .votes__votes-against-count
-          = Vote.where(votable: question).where(value: false).count
-      .votes__cancel
-        = link_to 'Cancel', cancel_vote_question_path(question), method: :delete, remote: true, data: { id: question.id, resource_type: 'Question', type: :json }
-      p Rating
-      .votes__rating
-        .votes__rating-count
-          = Vote.where(votable: question).where(value: true).count - Vote.where(votable: question).where(value: false).count
+    = render partial: 'shared/votes', locals: { model: question, polymorphic_model: question }

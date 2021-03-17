@@ -33,22 +33,7 @@ li id = "answer-#{answer.id}" class = 'answer'
     p = link_to 'Delete answer', question_answer_path(question, answer), method: :delete, remote: true
 
   - if user_signed_in?
-    .votes
-      .votes__errors
-      .votes__votes-for
-        = link_to 'Vote for', vote_for_question_answer_path(answer.question, answer), method: :patch, remote: true, data: { id: answer.id, resource_type: 'Answer', type: :json }
-        .votes__votes-for-count
-          = Vote.where(votable: answer).where(value: true).count
-      .votes__votes-against
-        = link_to 'Vote against', vote_against_question_answer_path(answer.question, answer), method: :patch, remote: true, data: { id: answer.id, resource_type: 'Answer', type: :json }
-        .votes__votes-against-count
-          = Vote.where(votable: answer).where(value: false).count
-      .votes__cancel
-        = link_to 'Cancel', cancel_vote_question_answer_path(answer.question, answer), method: :delete, remote: true, data: { id: answer.id, resource_type: 'Answer', type: :json }
-      p Rating
-      .votes__rating
-        .votes__rating-count
-          = Vote.where(votable: answer).where(value: true).count - Vote.where(votable: answer).where(value: false).count
+    = render partial: 'shared/votes', locals: { model: answer, polymorphic_model: [answer.question, answer] }
 
   - if current_user&.author_of?(answer.question)
     p = link_to 'Choose as best', best_question_answer_path(question, answer), method: :patch, remote: true

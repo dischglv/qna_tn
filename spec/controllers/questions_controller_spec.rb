@@ -16,13 +16,13 @@ RSpec.describe QuestionsController, type: :controller do
             expect do
               patch :vote_for, params: { id: question }, format: :json
               question.reload
-            end.to change(question.votes.where(value: true), :count).by(1)
+            end.to change(question.votes.where("value = 1"), :count).by(1)
           end
 
           it 'renders votes in json' do
             patch :vote_for, params: { id: question }, format: :json
 
-            expect(response.body).to eq([question.votes.first].to_json)
+            expect(response.body).to eq({ votes_for: question.positive_votes, votes_against: question.negative_votes, rating: question.rating }.to_json)
           end
 
           it 'responds with success' do
@@ -39,7 +39,7 @@ RSpec.describe QuestionsController, type: :controller do
             expect do
               patch :vote_for, params: { id: question }, format: :json
               question.reload
-            end.to_not change(question.votes.where(value: true), :count)
+            end.to_not change(question.votes.where("value = 1"), :count)
           end
 
           it 'renders error in json' do
@@ -63,7 +63,7 @@ RSpec.describe QuestionsController, type: :controller do
           expect do
             patch :vote_for, params: { id: question }, format: :json
             question.reload
-          end.to_not change(question.votes.where(value: true), :count)
+          end.to_not change(question.votes.where("value = 1"), :count)
         end
 
         it 'renders error in json' do
@@ -85,7 +85,7 @@ RSpec.describe QuestionsController, type: :controller do
         expect do
           patch :vote_for, params: { id: question }, format: :json
           question.reload
-        end.to_not change(question.votes.where(value: true), :count)
+        end.to_not change(question.votes.where("value = 1"), :count)
       end
     end
   end
@@ -101,13 +101,13 @@ RSpec.describe QuestionsController, type: :controller do
             expect do
               patch :vote_against, params: { id: question }, format: :json
               question.reload
-            end.to change(question.votes.where(value: false), :count).by(1)
+            end.to change(question.votes.where("value = -1"), :count).by(1)
           end
 
           it 'renders votes in json' do
             patch :vote_against, params: { id: question }, format: :json
 
-            expect(response.body).to eq([question.votes.first].to_json)
+            expect(response.body).to eq({ votes_for: question.positive_votes, votes_against: question.negative_votes, rating: question.rating }.to_json)
           end
 
           it 'responds with success' do
@@ -124,7 +124,7 @@ RSpec.describe QuestionsController, type: :controller do
             expect do
               patch :vote_against, params: { id: question }, format: :json
               question.reload
-            end.to_not change(question.votes.where(value: false), :count)
+            end.to_not change(question.votes.where("value = -1"), :count)
           end
 
           it 'renders error in json' do
@@ -148,7 +148,7 @@ RSpec.describe QuestionsController, type: :controller do
           expect do
             patch :vote_against, params: { id: question }, format: :json
             question.reload
-          end.to_not change(question.votes.where(value: false), :count)
+          end.to_not change(question.votes.where("value = -1"), :count)
         end
 
         it 'renders error in json' do
@@ -170,7 +170,7 @@ RSpec.describe QuestionsController, type: :controller do
         expect do
           patch :vote_against, params: { id: question }, format: :json
           question.reload
-        end.to_not change(question.votes.where(value: false), :count)
+        end.to_not change(question.votes.where("value = -1"), :count)
       end
     end
   end
@@ -179,7 +179,7 @@ RSpec.describe QuestionsController, type: :controller do
     before { login user2 }
 
     context 'User voted before' do
-      let!(:vote) { create(:vote, votable: question, user: user2, value: true) }
+      let!(:vote) { create(:vote, votable: question, user: user2, value: 1) }
 
       it "deletes user's vote" do
         expect do
@@ -191,7 +191,7 @@ RSpec.describe QuestionsController, type: :controller do
       it 'returns deleted vote in JSON' do
         delete :cancel_vote, params: { id: question }, format: :json
 
-        expect(response.body).to eq(vote.to_json)
+        expect(response.body).to eq({ votes_for: question.positive_votes, votes_against: question.negative_votes, rating: question.rating }.to_json)
       end
     end
 

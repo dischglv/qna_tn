@@ -96,7 +96,7 @@ ActiveRecord::Schema.define(version: 2021_03_03_141158) do
   end
 
   create_table "votes", force: :cascade do |t|
-    t.boolean "value", null: false
+    t.integer "value", default: 0
     t.bigint "user_id", null: false
     t.string "votable_type"
     t.bigint "votable_id"

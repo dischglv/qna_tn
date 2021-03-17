@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :vote do
     value { false }
-    user { nil }
+    user
     votable { "" }
   end
 end

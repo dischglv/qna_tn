@@ -1,0 +1,16 @@
+.votes
+  .votes__errors
+  .votes__votes-for
+    = link_to 'Vote for', polymorphic_path(polymorphic_model, action: :vote_for), method: :patch, remote: true, data: { id: model.id, resource_type: model.class.name, type: :json }
+    .votes__votes-for-count
+      = model.positive_votes
+  .votes__votes-against
+    = link_to 'Vote against', polymorphic_path(polymorphic_model, action: :vote_against), method: :patch, remote: true, data: { id: model.id, resource_type: model.class.name, type: :json }
+    .votes__votes-against-count
+      = model.negative_votes
+  .votes__cancel
+    = link_to 'Cancel', polymorphic_path(polymorphic_model, action: :cancel_vote), method: :delete, remote: true, data: { id: model.id, resource_type: model.class.name, type: :json }
+  p Rating
+  .votes__rating
+    .votes__rating-count
+      = model.rating

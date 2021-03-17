@@ -22,10 +22,11 @@ module Voted
   end
 
   def cancel_vote
-    respond_to do |format|
-      if votable.votes.where(user: current_user).present?
-        format.json { render json: votable.votes.where(user: current_user).first.destroy }
-      else
+    if votable.votes.where(user: current_user).present?
+      votable.votes.where(user: current_user).first.destroy
+      render_json
+    else
+      respond_to do |format|
         format.json { render json: { error: "Vote doesn't exist" }, status: :forbidden }
       end
     end
@@ -41,7 +42,7 @@ module Voted
 
   def render_json
     respond_to do |format|
-      format.json { render json: votable.votes }
+      format.json { render json: { votes_for: votable.positive_votes, votes_against: votable.negative_votes, rating: votable.rating } }
     end
   end
 
