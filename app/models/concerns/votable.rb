@@ -14,14 +14,14 @@ module Votable
   end
 
   def positive_votes
-    votes.where("value = 1").count
+    votes.where(value: 1).count
   end
 
   def negative_votes
-    votes.where("value = -1").count
+    votes.where(value: -1).count
   end
 
   def rating
-    votes.sum(:value) ? votes.sum(:value) : 0
+    votes.sum(:value)
   end
 end
