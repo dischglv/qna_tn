@@ -1,53 +1,39 @@
-- if user_signed_in?
-  p = link_to 'Log out', destroy_user_session_path, method: :delete
-  |
-  p = link_to 'Your awards', awards_path
-- else
-  p = link_to 'Log in', new_user_session_path
+.wrapper
+  - if user_signed_in?
+    = link_to 'Log out', destroy_user_session_path, method: :delete, class: 'button button_bordered'
+    |
+    = link_to 'Your awards', awards_path, class: 'button button_color-bordered'
+  - else
+    = link_to 'Log in', new_user_session_path, class: 'button button_bordered'
 
-.question
-  = render question
+  .question
+    = render question
 
-  .question-errors
+  h2 = 'Answers'
+  ul.answers
+    - if question.answers.best.present?
+      = render question.answers.best
+    = render question.answers.where(best: false)
 
-  - if current_user&.author_of?(question)
-    = link_to 'Edit', '#', data: { question_id: question.id }, class: 'edit-question-link'
-    = form_with model: question, local: false, html: { id: "edit-question-#{question.id}" }, class: 'hidden' do |f|
-      p = f.label :title
-      = f.text_field :title
-      p = f.label :body, 'Your question'
-      = f.text_area :body
-      p = f.label :files
-      = f.file_field :files, multiple: true, direct_upload: true
-      p = f.fields_for :links do |l|
-        = render partial: 'shared/link_fields', locals: { f: l }
-      .add-links
-        = link_to_add_association 'Add link', f, :links, partial: 'shared/link_fields'
-      p = f.submit 'Save'
+  h2 = 'Answer the question'
 
-h2 = 'Answers'
-ul.answers
-  - if question.answers.best.present?
-    = render question.answers.best
-  = render question.answers.where(best: false)
+  .answer-errors
 
-h2 = 'Answer the question'
+  = form_with model: [question, answer], local: false, class: 'new-answer' do |f|
+    p = f.label :body, 'Answer body'
+    = f.text_area :body
+    p = f.label :files
+    = f.file_field :files, multiple: true, direct_upload: true
+    p Links:
+    p = f.fields_for :links do |l|
+      = render partial: 'shared/link_fields', locals: { f: l }
+    .add-links
+      = link_to_add_association 'Add link', f, :links, partial: 'shared/link_fields'
+    p = f.submit 'Answer'
 
-.answer-errors
+  p = link_to 'All questions', questions_path
 
-= form_with model: [question, answer], local: false, class: 'new-answer' do |f|
-  p = f.label :body, 'Answer body'
-  = f.text_area :body
-  p = f.label :files
-  = f.file_field :files, multiple: true, direct_upload: true
-  p Links:
-  p = f.fields_for :links do |l|
-    = render partial: 'shared/link_fields', locals: { f: l }
-  .add-links
-    = link_to_add_association 'Add link', f, :links, partial: 'shared/link_fields'
-  p = f.submit 'Answer'
+  = javascript_pack_tag 'answer'
+  = javascript_pack_tag 'question'
+  = javascript_pack_tag 'vote'
 
-p = link_to 'All questions', questions_path
-
-= javascript_pack_tag 'answer'
-= javascript_pack_tag 'question'

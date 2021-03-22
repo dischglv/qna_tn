@@ -1,4 +1,5 @@
 require 'rails_helper'
+require './spec/models/concerns/votable_spec.rb'
 
 RSpec.describe Answer, type: :model do
   it { should belong_to :question }
@@ -103,4 +104,6 @@ RSpec.describe Answer, type: :model do
       end
     end
   end
+
+  it_behaves_like 'votable'
 end

@@ -1,25 +1,27 @@
-li id = "answer-#{answer.id}"
+li id = "answer-#{answer.id}" class = 'answer'
   .answer-errors
 
-  p = answer.user.email + ' answers: '
+  p.answer__user-email = answer.user.email + ' answers: '
 
-  p = answer.body
+  p.answer__body = answer.body
 
   .files
-    = render partial: 'shared/file', collection: answer.files
+    - if answer.files.present?
+      .files__title Files:
+      = render partial: 'shared/file', collection: answer.files
 
   .link-errors
   .links
     - if answer.links.present?
-      p Links:
+      .links__title Links:
       ul
         - answer.links.each do |l|
-          li id="link-#{l.id}"
+          li id="link-#{l.id}" class="links__item"
             - if gist?(l.url)
               script src="#{l.url}.js"
             = link_to l.name, l.url
             - if current_user&.author_of?(answer)
-              = link_to 'Delete link', link_path(l), method: :delete, remote: true
+              p = link_to 'Delete link', link_path(l), method: :delete, remote: true, class: 'links__delete'
 
   - if answer.user.awards.include? question.award
     b AWARDED
@@ -29,6 +31,9 @@ li id = "answer-#{answer.id}"
 
   - if current_user&.author_of?(answer)
     p = link_to 'Delete answer', question_answer_path(question, answer), method: :delete, remote: true
+
+  - if user_signed_in?
+    = render partial: 'shared/votes', locals: { model: answer, polymorphic_model: [answer.question, answer] }
 
   - if current_user&.author_of?(answer.question)
     p = link_to 'Choose as best', best_question_answer_path(question, answer), method: :patch, remote: true

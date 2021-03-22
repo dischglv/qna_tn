@@ -1,8 +1,16 @@
 Rails.application.routes.draw do
   devise_for :users
 
-  resources :questions, except: :edit do
-    resources :answers, only: %i[show create update destroy] do
+  concern :votable do
+    member do
+      patch :vote_for
+      patch :vote_against
+      delete :cancel_vote
+    end
+  end
+
+  resources :questions, concerns: [ :votable ], except: :edit do
+    resources :answers, concerns: [ :votable ], only: %i[show create update destroy] do
       member do
         patch :best
       end

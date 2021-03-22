@@ -1,0 +1,266 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
+@import url('//fonts.googleapis.com/css?family=DotGothic16&family=Lato:wght@300;400&family=Roboto:wght@400;700&display=swap');
+
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+body {
+    line-height: 1;
+}
+ol, ul {
+    list-style: none;
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/*-----------------------------------------------------------*/
+
+.body {
+  font-family: 'Lato', sans-serif;
+  box-sizing: border-box;
+}
+
+.wrapper {
+    margin: 0 auto;
+    padding: 15px 26px;
+    max-width: 900px;
+    border: 1px solid #D5D5D5;
+}
+
+.button {
+    display: inline-block;
+    width: 134px;
+    max-height: 28px;
+    text-align: center;
+    padding: 6px;
+    margin-right: 23px;
+    margin-bottom: 23px;
+
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    font-style: normal;
+
+    color: #454545;
+    text-decoration: none;
+}
+
+.button_bordered {
+    border: 1px solid #CFCFCF;
+    border-radius: 6px;
+}
+
+.button_color-bordered {
+    border: 1px solid #FFC700;
+    border-radius: 6px;
+}
+
+.question {
+    border: 1px solid #DCDCDC;
+    border-radius: 16px;
+    padding: 9px 134px 15px 48px;
+}
+
+.question__user-email {
+    color: #979797;
+    font-family: 'Lato', sans-serif;
+    font-weight: normal;
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+.question__title {
+  font-family: 'Roboto', sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.question__body {
+  font-family: 'Lato', sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  margin-bottom: 14px;
+}
+
+.links__title, .links__item, .links ul {
+  display: inline-block;
+  margin-right: 17px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 300;
+}
+
+.links__title {
+  vertical-align: top;
+}
+.links__item a {
+  text-decoration: none;
+}
+
+.links {
+  margin-bottom: 14px;
+}
+
+.files__title, .files__item {
+  display: inline-block;
+  margin-right: 17px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 300;
+}
+
+.files__delete {
+  display: block
+}
+
+.files__title {
+  vertical-align: top;
+}
+.files__item a {
+  text-decoration: none;
+}
+
+.files {
+  margin-bottom: 14px;
+}
+
+.edit-question-link {
+  display: inline-block;
+  font-family: 'Lato', sans-serif;
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 19px;
+  padding-bottom: 14px;
+}
+
+.question form {
+  margin-bottom: 14px;
+}
+
+.award h4 {
+  font-family: 'Lato', sans-serif;
+  font-weight: 300;
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.award__image {
+  border-radius: 50%;
+  border: 1px solid #FFC700;
+  width: 75px;
+  height: 70px;
+  margin-right: 24px;
+  vertical-align: center;
+}
+
+.award__title {
+  display: inline-block;
+  font-family: 'Roboto', sans-serif;
+  font-weight: normal;
+  font-size: 14px;
+}
+
+.answer__user-email {
+  color: #979797;
+  font-family: 'Lato', sans-serif;
+  font-weight: normal;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+h2 {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 22px;
+  line-height: 26px;
+
+  padding: 25px 0 30px 30px;
+}
+
+.answer {
+  padding: 9px 134px 15px 48px;
+}
+
+.answer__body {
+  font-family: 'Lato', sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  margin-bottom: 14px;
+  padding-left: 30px;
+}
+
+.votes {
+  padding: 15px;
+}
+
+.votes__votes-for, .votes__votes-against, .votes__rating {
+  font-family: Lato;
+  font-style: normal;
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 19px;
+
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.votes a {
+  text-decoration: none;
+}
+
+.votes__errors {
+  padding: 5px;
+  font-family: Lato;
+  font-style: normal;
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 19px;
+  color: #730E15;
+}

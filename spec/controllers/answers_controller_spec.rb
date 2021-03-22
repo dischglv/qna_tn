@@ -5,6 +5,221 @@ RSpec.describe AnswersController, type: :controller do
   let(:user) { create(:user) }
   let(:user2) { create(:user) }
 
+  describe 'PATCH #vote_for' do
+    let!(:answer) { create(:answer, question: question, user: user) }
+
+    context 'Authenticated user'do
+      context 'non-author of the answer' do
+        before { login user2 }
+
+        context 'votes for the first time' do
+          it 'changes number of answer votes' do
+            expect do
+              patch :vote_for, params: { question_id: question, id: answer }, format: :json
+              answer.reload
+            end.to change(answer.votes.where("value = 1"), :count).by(1)
+          end
+
+          it 'renders votes in json' do
+            patch :vote_for, params: { question_id: question, id: answer }, format: :json
+
+            expect(response.body).to eq({ votes_for: answer.positive_votes, votes_against: answer.negative_votes, rating: answer.rating }.to_json)
+          end
+
+          it 'responds with success' do
+            patch :vote_for, params: { question_id: question, id: answer }, format: :json
+
+            expect(response).to have_http_status(:success)
+          end
+        end
+
+        context 're-votes' do
+          before { create(:vote, user: user2, votable: answer) }
+
+          it 'does not changes number of votes' do
+            expect do
+              patch :vote_for, params: { question_id: question, id: answer }, format: :json
+              answer.reload
+            end.to_not change(answer.votes.where("value = 1"), :count)
+          end
+
+          it 'renders error in json' do
+            patch :vote_for, params: { question_id: question, id: answer }, format: :json
+
+            expect(response.body).to eq(["Votes is invalid"].to_json)
+          end
+
+          it 'responds with forbidden status' do
+            patch :vote_for, params: { question_id: question, id: answer }, format: :json
+
+            expect(response).to have_http_status(:forbidden)
+          end
+        end
+      end
+
+      context 'author of the answer' do
+        before { login user }
+
+        it 'does not changes number of votes' do
+          expect do
+            patch :vote_for, params: { question_id: question, id: answer }, format: :json
+            answer.reload
+          end.to_not change(answer.votes.where("value = 1"), :count)
+        end
+
+        it 'renders error in json' do
+          patch :vote_for, params: { question_id: question, id: answer }, format: :json
+
+          expect(response.body).to eq(["Votes is invalid"].to_json)
+        end
+
+        it 'responds with forbidden status' do
+          patch :vote_for, params: { question_id: question, id: answer }, format: :json
+
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+    end
+
+    context 'Unauthenticated user' do
+      it 'does not changes number of votes' do
+        expect do
+          patch :vote_for, params: { question_id: question, id: answer }, format: :json
+          answer.reload
+        end.to_not change(answer.votes.where("value = 1"), :count)
+      end
+    end
+  end
+
+  describe 'PATCH #vote_against' do
+    let!(:answer) { create(:answer, question: question, user: user) }
+
+    context 'Authenticated user'do
+      context 'non-author of the answer' do
+        before { login user2 }
+
+        context 'votes for the first time' do
+          it 'changes number of answer votes' do
+            expect do
+              patch :vote_against, params: { question_id: question, id: answer }, format: :json
+              answer.reload
+            end.to change(answer.votes.where("value = -1"), :count).by(1)
+          end
+
+          it 'renders votes in json' do
+            patch :vote_against, params: { question_id: question, id: answer }, format: :json
+
+            expect(response.body).to eq({ votes_for: answer.positive_votes, votes_against: answer.negative_votes, rating: answer.rating }.to_json)
+          end
+
+          it 'responds with success' do
+            patch :vote_against, params: { question_id: question, id: answer }, format: :json
+
+            expect(response).to have_http_status(:success)
+          end
+        end
+
+        context 're-votes' do
+          before { create(:vote, user: user2, votable: answer) }
+
+          it 'does not changes number of votes' do
+            expect do
+              patch :vote_against, params: { question_id: question, id: answer }, format: :json
+              answer.reload
+            end.to_not change(answer.votes.where("value = -1"), :count)
+          end
+
+          it 'renders error in json' do
+            patch :vote_against, params: { question_id: question, id: answer }, format: :json
+
+            expect(response.body).to eq(["Votes is invalid"].to_json)
+          end
+
+          it 'responds with forbidden status' do
+            patch :vote_against, params: { question_id: question, id: answer }, format: :json
+
+            expect(response).to have_http_status(:forbidden)
+          end
+        end
+      end
+
+      context 'author of the answer' do
+        before { login user }
+
+        it 'does not changes number of votes' do
+          expect do
+            patch :vote_against, params: { question_id: question, id: answer }, format: :json
+            answer.reload
+          end.to_not change(answer.votes.where("value = -1"), :count)
+        end
+
+        it 'renders error in json' do
+          patch :vote_against, params: { question_id: question, id: answer }, format: :json
+
+          expect(response.body).to eq(["Votes is invalid"].to_json)
+        end
+
+        it 'responds with forbidden status' do
+          patch :vote_against, params: { question_id: question, id: answer }, format: :json
+
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+    end
+
+    context 'Unauthenticated user' do
+      it 'does not changes number of votes' do
+        expect do
+          patch :vote_against, params: { question_id: question, id: answer }, format: :json
+          answer.reload
+        end.to_not change(answer.votes.where("value = -1"), :count)
+      end
+    end
+  end
+
+  describe 'DELETE #cancel_vote' do
+    let!(:answer) { create(:answer, question: question, user: user) }
+    before { login user2 }
+
+    context 'User voted before' do
+      let!(:vote) { create(:vote, votable: answer, user: user2, value: 1) }
+
+      it "deletes user's vote" do
+        expect do
+          delete :cancel_vote, params: { question_id: question, id: answer }, format: :json
+          answer.reload
+        end.to change(answer.votes.where(user: user2), :count).by(-1)
+      end
+
+      it 'returns deleted vote in JSON' do
+        delete :cancel_vote, params: { question_id: question, id: answer }, format: :json
+
+        expect(response.body).to eq({ votes_for: answer.positive_votes, votes_against: answer.negative_votes, rating: answer.rating }.to_json)
+      end
+    end
+
+    context 'User did not vote before' do
+      it "does not delete any vote" do
+        expect do
+          delete :cancel_vote, params: { question_id: question, id: answer }, format: :json
+          answer.reload
+        end.to_not change(answer.votes, :count)
+      end
+
+      it 'renders error in json' do
+        delete :cancel_vote, params: { question_id: question, id: answer }, format: :json
+
+        expect(response.body).to eq({ error: "Vote doesn't exist" }.to_json)
+      end
+
+      it 'responds with forbidden status' do
+        delete :cancel_vote, params: { question_id: question, id: answer }, format: :json
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
+
   describe 'PATCH #best' do
     let!(:question) { create(:question, user: user) }
     let!(:answer_last_best) { create(:answer, question: question, best: true) }

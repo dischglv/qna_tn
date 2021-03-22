@@ -1,28 +1,49 @@
 div id = "question-#{question.id}"
-  h1 = question.title
-  p = question.body
+  p.question__user-email = "#{question.user.email} asks"
 
-  .files
-    = render partial: 'shared/file', collection: question.files
+  h1.question__title = question.title
+  p.question__body = question.body
 
   .link-errors
   .links
     - if question.links.present?
-      p Links:
+      .links__title Links:
       ul
         - question.links.each do |l|
-          li id="link-#{l.id}"
+          li id="link-#{l.id}" class="links__item"
             - if gist?(l.url)
               script src="#{l.url}.js"
             = link_to l.name, l.url
             - if current_user&.author_of?(question)
-              = link_to 'Delete link', link_path(l), method: :delete, remote: true
+              p = link_to 'Delete link', link_path(l), method: :delete, remote: true, class: 'links__delete'
 
-  .award
+  .files
+    - if question.files.present?
+      .files__title Files:
+      = render partial: 'shared/file', collection: question.files
+
+  .question-errors
+
+  - if current_user&.author_of?(question)
+    = link_to 'Edit', '#', data: { question_id: question.id }, class: 'edit-question-link'
+    = form_with model: question, local: false, html: { id: "edit-question-#{question.id}" }, class: 'hidden' do |f|
+      p = f.label :title
+      = f.text_field :title
+      p = f.label :body, 'Your question'
+      = f.text_area :body
+      p = f.label :files
+      = f.file_field :files, multiple: true, direct_upload: true
+      p = f.fields_for :links do |l|
+        = render partial: 'shared/link_fields', locals: { f: l }
+      .add-links
+        = link_to_add_association 'Add link', f, :links, partial: 'shared/link_fields'
+      p = f.submit 'Save'
+
+  section.award
     - unless question.award.nil?
-      p
-        b Award for the best answer
-      p = question.award.title
-      br
-      = image_tag url_for(question.award.image)
+      h4 Award for the best answer
+      = image_tag url_for(question.award.image), class: 'award__image'
+      p.award__title = question.award.title
 
+  - if user_signed_in?
+    = render partial: 'shared/votes', locals: { model: question, polymorphic_model: question }
