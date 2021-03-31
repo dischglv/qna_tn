@@ -6,7 +6,7 @@
   - else
     = link_to 'Log in', new_user_session_path, class: 'button button_bordered'
 
-  .question
+  .question data-id="#{question.id}"
     = render question
 
   h2 = 'Answers'

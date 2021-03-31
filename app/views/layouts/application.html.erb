@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <%= action_cable_meta_tag %>
+    <%= Gon::Base.render_data %>
 
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= stylesheet_link_tag 'https://fonts.googleapis.com/css2?family=DotGothic16&family=Lato:wght@300;400&family=Roboto:wght@400;700&display=swap', media: 'all', 'data-turbolinks-track': 'reload' %>
