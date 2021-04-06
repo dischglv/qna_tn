@@ -47,9 +47,13 @@ class AnswersController < ApplicationController
     @question ||= Question.find(params[:question_id])
   end
 
-  helper_method :answer
+  def comment
+    @comment = answer.comments.new
+  end
 
+  helper_method :answer
   helper_method :question
+  helper_method :comment
 
   def answer_params
     params.require(:answer).permit(:body, files: [], links_attributes: [:name, :url])
@@ -57,7 +61,6 @@ class AnswersController < ApplicationController
 
   def publish_answer
     return if @answer.errors.any?
-    gon.user_id = @answer.user_id
 
     ActionCable.server.broadcast(
       "question_#{@answer.question.id}",

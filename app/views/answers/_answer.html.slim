@@ -38,6 +38,14 @@ li id = "answer-#{answer.id}" class = 'answer'
   - if current_user&.author_of?(answer.question)
     p = link_to 'Choose as best', best_question_answer_path(question, answer), method: :patch, remote: true
 
+  .comments id="answer-#{answer.id}"
+    = render answer.comments
+  .comment_form data-type="answer" data-id="#{answer.id}"
+    = form_with model: [question, answer, comment], local: false do |f|
+      = f.label :body, 'Your comment'
+      = f.text_area :body
+      = f.submit 'Save'
+
   = form_with model: [answer.question, answer], local: false, class: 'hidden', html: { id: "edit-answer-#{answer.id}" } do |f|
     = f.label :body, 'Your answer'
     = f.text_area :body

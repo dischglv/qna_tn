@@ -50,8 +50,12 @@ class QuestionsController < ApplicationController
     @answer ||= question.answers.new
   end
 
-  helper_method :question
+  def comment
+    @comment ||= question.comments.new
+  end
 
+  helper_method :question
+  helper_method :comment
   helper_method :answer
 
   def question_params

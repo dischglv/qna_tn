@@ -6,6 +6,7 @@ feature 'User can answer a question', %q{
 } do
 
   given(:user) { create(:user) }
+  given(:new_user) { create(:user) }
   given(:question) { create(:question) }
 
   describe 'Authenticated user', js: true do
@@ -48,5 +49,28 @@ feature 'User can answer a question', %q{
     click_on 'Answer'
 
     expect(page).to have_content 'You need to sign in or sign up before continuing.'
+  end
+
+  scenario 'Another user sees new answer', js: true do
+    Capybara.using_session('user') do
+      sign_in user
+      visit question_path(question)
+    end
+
+    Capybara.using_session('new_user') do
+      sign_in new_user
+      visit question_path(question)
+    end
+
+    Capybara.using_session('user') do
+      fill_in 'Answer body', with: 'New answer'
+      click_on 'Answer'
+    end
+
+    Capybara.using_session('new_user') do
+      within '.answers' do
+        expect(page).to have_content 'New answer'
+      end
+    end
   end
 end
