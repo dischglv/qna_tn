@@ -1,5 +1,6 @@
 class AnswersController < ApplicationController
   before_action :authenticate_user!, except: :show
+  after_action :publish_answer, only: :create
 
   include Voted
 
@@ -46,11 +47,41 @@ class AnswersController < ApplicationController
     @question ||= Question.find(params[:question_id])
   end
 
-  helper_method :answer
+  def comment
+    @comment = answer.comments.new
+  end
 
+  helper_method :answer
   helper_method :question
+  helper_method :comment
 
   def answer_params
     params.require(:answer).permit(:body, files: [], links_attributes: [:name, :url])
+  end
+
+  def publish_answer
+    return if @answer.errors.any?
+
+    ActionCable.server.broadcast(
+      "question_#{@answer.question.id}",
+      answer: render_answer
+    )
+  end
+
+  def render_answer
+    AnswersController.renderer.instance_variable_set(
+      :@env, {
+      "HTTP_HOST" => "localhost:3000",
+      "HTTPS" => "off",
+      "REQUEST_METHOD" => "GET",
+      "SCRIPT_NAME" => '',
+      "warden" => warden
+    }
+    )
+
+    AnswersController.render(
+      partial: 'answers/answer',
+      locals: { answer: @answer, question: @answer.question }
+    )
   end
 end

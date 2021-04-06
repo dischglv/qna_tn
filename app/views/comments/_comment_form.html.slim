@@ -1,0 +1,5 @@
+.comment_form data-type="#{resource.class.name}" data-id="#{resource.id}"
+  = form_with model: [resource, comment], local: false do |f|
+    = f.label :body, 'Your comment'
+    = f.text_area :body
+    = f.submit 'Save'

@@ -7,6 +7,7 @@ feature 'User can create question', %q{
 } do
 
   given(:user) { create(:user) }
+  given(:new_user) { create(:user) }
 
   describe 'Authenticated user' do
     background do
@@ -49,5 +50,29 @@ feature 'User can create question', %q{
     click_on 'Ask question'
 
     expect(page).to have_content 'You need to sign in or sign up before continuing.'
+  end
+
+  scenario 'Another user sees new question', js: true do
+    Capybara.using_session('user') do
+      sign_in user
+      visit questions_path
+    end
+
+    Capybara.using_session('new_user') do
+      sign_in new_user
+      visit questions_path
+    end
+
+    Capybara.using_session('user') do
+      click_on 'Ask question'
+      fill_in 'Title', with: 'New question'
+      fill_in 'Body', with: 'new question body'
+      click_on 'Ask'
+    end
+
+    Capybara.using_session('new_user') do
+      expect(page).to have_content 'New question'
+      expect(page).to have_content 'new question body'
+    end
   end
 end

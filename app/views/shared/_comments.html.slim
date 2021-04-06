@@ -1,0 +1,6 @@
+.comments data-type="#{resource.class.name}" data-id="#{resource.id}"
+  = form_with model: comment, url: polymorphic_path(polymorphic_model, action: :create_comment), data: { type: :json }, local: false do |f|
+    = f.label :body, 'Your comment'
+    = f.text_area :body
+    .new_comment
+      = f.submit 'Save'

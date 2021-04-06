@@ -5,11 +5,8 @@
 - else
   p = link_to 'Log in', new_user_session_path
 
-- @questions.each do |question|
-    h3 = question.title
-    p = question.body
-    p = link_to 'Show question', question_path(question)
-    - if current_user&.author_of?(question)
-        p = link_to 'Delete question', question_path(question), method: :delete
+.questions
+  - @questions.each do |question|
+      = render partial: 'questions/question_preview', locals: { question: question }
 
 p= link_to 'Ask question', new_question_path

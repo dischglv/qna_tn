@@ -1,0 +1,5 @@
+h3 = question.title
+p = question.body
+p = link_to 'Show question', question_path(question)
+- if current_user&.author_of?(question)
+  p = link_to 'Delete question', question_path(question), method: :delete

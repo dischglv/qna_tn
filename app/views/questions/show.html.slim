@@ -6,7 +6,7 @@
   - else
     = link_to 'Log in', new_user_session_path, class: 'button button_bordered'
 
-  .question
+  .question data-id="#{question.id}"
     = render question
 
   h2 = 'Answers'
@@ -36,4 +36,5 @@
   = javascript_pack_tag 'answer'
   = javascript_pack_tag 'question'
   = javascript_pack_tag 'vote'
+  = javascript_pack_tag 'comment'
 

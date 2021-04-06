@@ -10,7 +10,11 @@ Rails.application.routes.draw do
   end
 
   resources :questions, concerns: [ :votable ], except: :edit do
+    resources :comments, only: :create
+
     resources :answers, concerns: [ :votable ], only: %i[show create update destroy] do
+      resources :comments, only: :create
+
       member do
         patch :best
       end
@@ -22,4 +26,6 @@ Rails.application.routes.draw do
   resources :links, only: :destroy
 
   root to: 'questions#index'
+
+  mount ActionCable.server => '/cable'
 end

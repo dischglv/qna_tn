@@ -47,3 +47,11 @@ div id = "question-#{question.id}"
 
   - if user_signed_in?
     = render partial: 'shared/votes', locals: { model: question, polymorphic_model: question }
+
+    .comments id="question-#{question.id}"
+      = render question.comments
+    .comment_form data-type="question" data-id="#{question.id}"
+      = form_with model: [question, comment], local: false do |f|
+        = f.label :body, 'Your comment'
+        = f.text_area :body
+        = f.submit 'Save'
