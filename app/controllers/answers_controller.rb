@@ -1,40 +1,28 @@
 class AnswersController < ApplicationController
-  before_action :authenticate_user!, except: :show
+
+  before_action :authenticate_user!
   after_action :publish_answer, only: :create
+
+  load_and_authorize_resource
 
   include Voted
 
-  def show; end
-
   def create
-    @answer = question.answers.new(answer_params)
-    @answer.user = current_user
-
+    @answer = question.answers.new(answer_params.merge(user: current_user))
     @answer.save
   end
 
   def update
-    if current_user.author_of?(answer)
-      answer.update(answer_params)
-    else
-      render status: :forbidden
-    end
+    answer.update(answer_params)
   end
 
   def destroy
-    if current_user.author_of?(answer)
-      answer.destroy
-    else
-      render status: :forbidden
-    end
+    answer.destroy
   end
 
   def best
-    if current_user.author_of?(question)
-      answer.make_best
-    else
-      render status: :forbidden
-    end
+    authorize! :best, answer
+    answer.make_best
   end
 
   private
@@ -75,7 +63,8 @@ class AnswersController < ApplicationController
       "HTTPS" => "off",
       "REQUEST_METHOD" => "GET",
       "SCRIPT_NAME" => '',
-      "warden" => warden
+      "warden" => warden,
+      "rack.input" => ''
     }
     )
 
