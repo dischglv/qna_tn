@@ -14,7 +14,7 @@ div id = "question-#{question.id}"
             - if gist?(l.url)
               script src="#{l.url}.js"
             = link_to l.name, l.url
-            - if current_user&.author_of?(question)
+            - if can?(:destroy, l)
               p = link_to 'Delete link', link_path(l), method: :delete, remote: true, class: 'links__delete'
 
   .files
@@ -24,7 +24,7 @@ div id = "question-#{question.id}"
 
   .question-errors
 
-  - if current_user&.author_of?(question)
+  - if can?(:update, question)
     = link_to 'Edit', '#', data: { question_id: question.id }, class: 'edit-question-link'
     = form_with model: question, local: false, html: { id: "edit-question-#{question.id}" }, class: 'hidden' do |f|
       p = f.label :title

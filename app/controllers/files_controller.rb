@@ -1,10 +1,8 @@
 class FilesController < ApplicationController
+
   def destroy
-    if current_user.author_of?(file.record)
-      file.purge
-    else
-      head :forbidden
-    end
+    authorize! :destroy, file
+    file.purge
   end
 
   private

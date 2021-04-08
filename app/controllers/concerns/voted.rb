@@ -2,6 +2,7 @@ module Voted
   extend ActiveSupport::Concern
 
   def vote_for
+    authorize! :vote_for, votable
     votable.add_positive_vote(current_user)
 
     if votable.save
@@ -12,6 +13,7 @@ module Voted
   end
 
   def vote_against
+    authorize! :vote_against, votable
     votable.add_negative_vote(current_user)
 
     if votable.save
@@ -22,6 +24,7 @@ module Voted
   end
 
   def cancel_vote
+    authorize! :cancel_vote, votable
     if votable.votes.where(user: current_user).present?
       votable.votes.where(user: current_user).first.destroy
       render_json

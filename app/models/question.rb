@@ -1,4 +1,5 @@
 require 'concerns/votable'
+require 'concerns/commentable'
 
 class Question < ApplicationRecord
   include Votable
