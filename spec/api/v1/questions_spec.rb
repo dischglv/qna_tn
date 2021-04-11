@@ -188,7 +188,7 @@ describe 'Questions API', type: :request do
 
     it_behaves_like 'Api Authorizable' do
       let(:method) { :delete }
-      let(:params_success) { { params: { access_token: access_token.token, question: attributes_for(:question)}, headers: headers } }
+      let(:params_success) { { params: { access_token: access_token.token }, headers: headers } }
     end
 
     context 'author of the question' do

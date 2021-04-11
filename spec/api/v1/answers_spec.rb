@@ -98,4 +98,95 @@ describe 'Answers API', type: :request do
       end
     end
   end
+
+  describe 'POST /api/v1/questions/:question_id/answers' do
+    let(:question) { create(:question) }
+    let(:api_path) { "/api/v1/questions/#{question.id}/answers" }
+
+    it_behaves_like 'Api Authorizable' do
+      let(:method) { :post }
+      let(:params_success) { { params: { access_token: access_token.token, answer: attributes_for(:answer)}, headers: headers } }
+    end
+
+    context 'with valid attributes' do
+      let(:answer_response) { json['answer'] }
+
+      it 'saves the answer' do
+        expect do
+          post api_path, params: { access_token: access_token.token, answer: attributes_for(:answer) }, headers: headers
+        end.to change(question.answers, :count).by(1)
+      end
+
+      it 'returns all public fields' do
+        post api_path, params: { access_token: access_token.token, answer: attributes_for(:answer) }, headers: headers
+        %w[id user_id body created_at updated_at].each do |attr|
+          expect(answer_response[attr]).to eq assigns(:answer).send(attr).as_json
+        end
+      end
+    end
+
+    context 'with invalid attributes' do
+      it 'does not save the question' do
+        expect do
+          post api_path, params: { access_token: access_token.token, answer: { body: '' }, headers: headers }
+        end.to_not change(question.answers, :count)
+      end
+    end
+  end
+
+  describe 'PATCH /api/v1/questions/:question_id/answers/:id' do
+    let(:question) { create(:question) }
+    let(:answer) { create(:answer, question: question, user: user)}
+    let(:api_path) { "/api/v1/questions/#{question.id}/answers/#{answer.id}" }
+
+    it_behaves_like 'Api Authorizable' do
+      let(:method) { :patch }
+      let(:params_success) { { params: { access_token: access_token.token, answer: attributes_for(:answer)}, headers: headers } }
+    end
+
+    context 'with valid attributes' do
+      it 'changes the answer' do
+        expect do
+          patch api_path, params: { access_token: access_token.token, answer: { body: 'new body' } }, headers: headers
+          answer.reload
+        end.to change(answer, :body)
+      end
+    end
+
+    context 'with invalid attributes' do
+      it "doesn't change the answer" do
+        expect do
+          patch api_path, params: { access_token: access_token.token, answer: { body: '' } }, headers: headers
+          answer.reload
+        end.to_not change(answer, :body)
+      end
+    end
+  end
+
+  describe 'DELETE /api/v1/questions/:question_id/answers/:id' do
+    let!(:question) { create(:question) }
+    let!(:answer) { create(:answer, question: question, user: user) }
+    let(:api_path) { "/api/v1/questions/#{question.id}/answers/#{answer.id}" }
+
+    it_behaves_like 'Api Authorizable' do
+      let(:method) { :delete }
+      let(:params_success) { { params: { access_token: access_token.token }, headers: headers } }
+    end
+
+    context 'author of the answer' do
+      it 'deletes the answer' do
+        expect do
+          delete api_path, params: { access_token: access_token.token }, headers: headers
+        end.to change(question.answers, :count).by(-1)
+      end
+    end
+
+    context 'non-author of the answer' do
+      it 'does not delete the answer' do
+        expect do
+          delete api_path, params: { access_token: user2_access_token.token }, headers: headers
+        end.to_not change(question.answers, :count)
+      end
+    end
+  end
 end

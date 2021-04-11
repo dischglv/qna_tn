@@ -11,6 +11,7 @@ describe 'Profiles API', type: :request do
 
     it_behaves_like 'Api Authorizable' do
       let(:method) { :get }
+      let(:params_success) { { params: { access_token: access_token.token }, headers: headers } }
     end
 
     context 'authorized' do
@@ -40,6 +41,7 @@ describe 'Profiles API', type: :request do
 
     it_behaves_like 'Api Authorizable' do
       let(:method) { :get }
+      let(:params_success) { { params: { access_token: access_token.token }, headers: headers } }
     end
 
     context 'authorized' do
