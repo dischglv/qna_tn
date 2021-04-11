@@ -319,7 +319,7 @@ DEPENDENCIES
   jquery-rails
   launchy
   listen (~> 3.3)
-  oj
+  oj (~> 3.3)
   pg (~> 1.1)
   puma (~> 5.0)
   rack-mini-profiler (~> 2.0)
