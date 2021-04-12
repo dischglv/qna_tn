@@ -1,5 +1,18 @@
 Rails.application.routes.draw do
+  use_doorkeeper
   devise_for :users
+
+  namespace :api do
+    namespace :v1 do
+      resources :profiles, only: [:index] do
+        get :me, on: :collection
+      end
+
+      resources :questions, only: [:index, :show, :create, :update, :destroy] do
+        resources :answers, only: [:index, :show, :create, :update, :destroy]
+      end
+    end
+  end
 
   concern :votable do
     member do
