@@ -7,6 +7,7 @@ RSpec.describe Question, type: :model do
   it { should have_many(:answers).dependent(:destroy) }
   it { should have_many(:links).dependent(:destroy) }
   it { should have_one(:award).dependent(:destroy) }
+  it { should have_many(:subscriptions).dependent(:destroy) }
 
   it { should validate_presence_of :title }
   it { should validate_presence_of :body }
@@ -31,7 +32,7 @@ RSpec.describe Question, type: :model do
   end
 
   describe '.last_day' do
-    let(:questions) { create(:question, 3, created_at: 12.hours.ago) }
+    let!(:questions) { create_list(:question, 3, created_at: 12.hours.ago) }
     it 'returns all questions of the last day' do
       expect(Question.last_day.size).to eq 3
     end

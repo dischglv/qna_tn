@@ -2,7 +2,7 @@ require 'sidekiq/web'
 
 Rails.application.routes.draw do
   authenticate :user, lambda { |u| u.admin? } do
-    mount 'Sidekiq::Web' => '/sidekiq'
+    mount Sidekiq::Web => '/sidekiq'
   end
 
   use_doorkeeper
@@ -30,7 +30,7 @@ Rails.application.routes.draw do
 
   resources :questions, concerns: [ :votable ], except: :edit do
     resources :comments, only: :create
-
+    resources :subscriptions, only: [ :create, :destroy ]
     resources :answers, concerns: [ :votable ], only: %i[show create update destroy] do
       resources :comments, only: :create
 

@@ -4,6 +4,11 @@ div id = "question-#{question.id}"
   h1.question__title = question.title
   p.question__body = question.body
 
+  - if can?(:create, Subscription) && !question_subscription(question)
+    = link_to 'Subscribe', question_subscriptions_path(question), method: :post, remote: true
+  - if can?(:destroy, question_subscription(question)) && question_subscription(question)
+    = link_to 'Unsubscribe', question_subscription_path(question, question_subscription(question)), method: :delete, remote: true
+
   .link-errors
   .links
     - if question.links.present?
