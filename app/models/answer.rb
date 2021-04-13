@@ -16,6 +16,8 @@ class Answer < ApplicationRecord
   validates :body, presence: true
   validate :validates_only_best_answer
 
+  after_create :notify_subscribers
+
   def self.best
     where(best: true).first
   end
@@ -41,5 +43,9 @@ class Answer < ApplicationRecord
     if question.answers.best.present?
       errors.add(:best, 'cannot have another best answer')
     end
+  end
+
+  def notify_subscribers
+    AnswerJob.perform_later(self)
   end
 end
