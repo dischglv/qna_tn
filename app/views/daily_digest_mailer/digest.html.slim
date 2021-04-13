@@ -1,0 +1,8 @@
+h1 Question Daily Digest
+p = "Hello, " + @user + ", here are your questions daily digest!"
+
+ul
+  - Question.last_day.each |question|
+    li
+      h2 = question.title
+      p = question.body

@@ -1,0 +1,6 @@
+' Questions daily digest
+= "\r\n" * 2
+' #{"Hello" + @user + ", here are your questions daily digest"}
+- Question.last_day.each |question|
+  = question.title
+  = question.body

@@ -20,4 +20,20 @@ RSpec.describe Question, type: :model do
   it 'has many attached file' do
     expect(Question.new.files).to be_an_instance_of(ActiveStorage::Attached::Many)
   end
+  
+  describe 'reputation' do
+    let(:question) { build(:question) }
+
+    it 'calls ReputationJob' do
+      expect(ReputationJob).to receive(:perform_later).with(question)
+      question.save!
+    end
+  end
+
+  describe '.last_day' do
+    let(:questions) { create(:question, 3, created_at: 12.hours.ago) }
+    it 'returns all questions of the last day' do
+      expect(Question.last_day.size).to eq 3
+    end
+  end
 end
